@@ -47,9 +47,9 @@ let simpleSlider = (()=> {
 
 	// Set slide width
 	function setSlideWidth() {
-		let allSlides = document.querySelectorAll(`.${defaults.slideClass}`);
-		for (let i = 0; i < allSlides.length; i++) {
-			allSlides[i].style.width = container.offsetWidth + 'px';
+		const slides = document.querySelectorAll(`.${defaults.slideClass}`);
+		for (let i = 0; i < slides.length; i++) {
+			slides[i].style.width = container.offsetWidth + 'px';
 		}
 	}
 
