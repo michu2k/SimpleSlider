@@ -2,7 +2,7 @@
 	Simple responsive slider created in pure javascript.
 	Author: Michał Strumpf
 	License: MIT
-	Version: v1.0.0 Beta
+	Version: v1.1.0 Beta
 */
 
 let simpleSlider = (()=> {
@@ -21,10 +21,10 @@ let simpleSlider = (()=> {
 	// Constans
 	const container = document.querySelector(`.${defaults.containerClass}`),
 		  wrapper = document.querySelector(`.${defaults.wrapperClass}`),
-		  buttons = container.querySelectorAll(`.${defaults.buttonsClass}`);
+		  buttons = container.querySelectorAll(`.${defaults.buttonsClass}`),
+		  slides = document.querySelectorAll(`.${defaults.slideClass}`);
 
 	let index = 1,
-		slides = document.querySelectorAll(`.${defaults.slideClass}`),
 		auto;
 
 	// Clone first and last slide
@@ -35,11 +35,22 @@ let simpleSlider = (()=> {
 		wrapper.insertBefore(lastEl, slides[0]);
 	}
 
+	createClones();
+
 	// Set wrapper width
 	function setWrapper() {
+		const slides = document.querySelectorAll(`.${defaults.slideClass}`);
 		let wrapperWidth = 0;
-		wrapperWidth = (window.innerWidth + 1) * (slides.length + 2) + 'px';
+		wrapperWidth = (container.offsetWidth + 1) * slides.length + 'px';
 		wrapper.style.width = wrapperWidth;	
+	}
+
+	// Set slide width
+	function setSlideWidth() {
+		let allSlides = document.querySelectorAll(`.${defaults.slideClass}`);
+		for (let i = 0; i < allSlides.length; i++) {
+			allSlides[i].style.width = container.offsetWidth + 'px';
+		}
 	}
 
 	// Change wrapper position
@@ -47,7 +58,7 @@ let simpleSlider = (()=> {
 		if (typeof index === 'undefined') 
 			index = 1;
 
-		let transform = index * window.innerWidth;
+		let transform = index * container.offsetWidth;
 
 		wrapper.style.WebkitTransform = `translate3d( -${transform}px, 0, 0)`; 
 		wrapper.style.transform = `translate3d( -${transform}px, 0, 0)`; 
@@ -71,6 +82,7 @@ let simpleSlider = (()=> {
 		    window.resizeTimer = setTimeout(() => {
 		    	setWrapper();
 		    	changeWrapperPos(index);
+		    	setSlideWidth();
 		    }, 200);	
 		});		
 	}
@@ -138,9 +150,9 @@ let simpleSlider = (()=> {
 	// Slider core
 	function sliderCore() {
 
-		createClones();
 		setWrapper();	
 		changeWrapperPos();
+		setSlideWidth();
 
 		autoPlay();
 		resize();

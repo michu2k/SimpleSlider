@@ -2,7 +2,7 @@
 Simple responsive slider created in pure javascript. It's working, but slider need some changes.
 
 ## Version
-v1.0.0 Beta
+v1.1.0 Beta
 
 ## Usage
 
