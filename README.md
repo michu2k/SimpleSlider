@@ -7,13 +7,13 @@ v1.0.0 Beta
 ## Usage
 
 ###### Include files
-```
+```html
 <link rel="stylesheet" href="css/simpleSlider.css"> 
 <script src="js/simpleSlider.min.js"></script>  
 ```
 
 ###### Create HTML layout
-```
+```html
 <div class="simple-slider-container">
 	<div class="simple-s-wrapper">
 		<!-- First slide -->
