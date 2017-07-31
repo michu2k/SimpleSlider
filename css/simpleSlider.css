@@ -1,0 +1,44 @@
+.simple-slider-container {
+  width: 100%;
+  height: 300px;
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+}
+.simple-slider-container .simple-s-wrapper {
+  height: 100%;
+  position: relative;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+.simple-slider-container .simple-s-element {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  width: 100vw;
+  height: 100%;
+  max-width: 100%;
+  float: left;
+  position: relative;
+}
+.simple-slider-container .simple-s-btn {
+  position: absolute;
+  width: 20px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 5;
+  top: 50%;
+  background-repeat: no-repeat;
+  -webkit-transform: translate(0, -50%);
+  transform: translate(0, -50%);
+}
+.simple-slider-container .simple-s-btn.simple-s-btn-prev {
+  left: 20px;
+  background-image: url(../img/prev.svg);
+  background-position: left;
+}
+.simple-slider-container .simple-s-btn.simple-s-btn-next {
+  right: 20px;
+  background-image: url(../img/next.svg);
+  background-position: right;
+}
