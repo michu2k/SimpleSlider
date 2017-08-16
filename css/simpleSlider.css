@@ -1,43 +1,47 @@
+/*Slider container*/
 .simple-slider-container {
   width: 100%;
   height: 300px;
-  z-index: 1;
   overflow: hidden;
   box-sizing: border-box;
+  z-index: 4;
   position: relative;
 }
-.simple-slider-container .simple-s-wrapper {
+/*Wrapper*/
+.simple-slider-container .slider-wrapper {
   height: 100%;
   position: relative;
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
-.simple-slider-container .simple-s-element {
+/*Slide*/
+.simple-slider-container .slider-element {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center top;
   height: 100%;
-  max-width: 100%;
   float: left;
   position: relative;
 }
-.simple-slider-container .simple-s-btn {
-  position: absolute;
+/*Buttons*/
+.simple-slider-container .slider-btn {
   width: 30px;
   height: 50px;
-  cursor: pointer;
-  z-index: 5;
   top: 50%;
+  cursor: pointer;
   background-repeat: no-repeat;
+  position: absolute;
   -webkit-transform: translate(0, -50%);
   transform: translate(0, -50%);
 }
-.simple-slider-container .simple-s-btn.simple-s-btn-prev {
+/*Previous*/
+.simple-slider-container .slider-btn.slider-btn-prev {
   left: 20px;
   background-image: url(../img/prev.svg);
   background-position: left;
 }
-.simple-slider-container .simple-s-btn.simple-s-btn-next {
+/*Next*/
+.simple-slider-container .slider-btn.slider-btn-next {
   right: 20px;
   background-image: url(../img/next.svg);
   background-position: right;

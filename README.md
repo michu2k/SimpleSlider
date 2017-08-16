@@ -1,8 +1,8 @@
 # SimpleSlider
-Simple responsive slider created in pure javascript. It's working, but slider need some changes.
+Simple responsive slider created in pure javascript.
 
 ## Version
-v1.1.0 Beta
+v1.2.0
 
 ## Usage
 
@@ -15,26 +15,26 @@ v1.1.0 Beta
 ###### Create HTML layout
 ```html
 <div class="simple-slider-container">
-	<div class="simple-s-wrapper">
+	<div class="slider-wrapper">
 		<!-- First slide -->
-		<div class="simple-s-element" style="background-image: url('path/to/image.jpg')">
+		<div class="slider-element" style="background-image: url('path/to/image.jpg')">
 			<!-- Any HTML content -->
 		</div>
 
 		<!-- Second slide -->
-		<div class="simple-s-element" style="background-image: url('path/to/image.jpg')">
+		<div class="slider-element" style="background-image: url('path/to/image.jpg')">
 			<!-- Any HTML content -->
 		</div>
 
 		<!-- Third slide -->
-		<div class="simple-s-element" style="background-image: url('path/to/image.jpg')">
+		<div class="slider-element" style="background-image: url('path/to/image.jpg')">
 			<!-- Any HTML content -->
 		</div>
 	</div>
 
 	<!-- Buttons (Not required) -->
-	<div class="simple-s-btn simple-s-btn-prev"></div>
-    <div class="simple-s-btn simple-s-btn-next"></div> 
+	<div class="slider-btn slider-btn-prev"></div>
+    <div class="slider-btn slider-btn-next"></div> 
 </div>
 ```
 
@@ -52,8 +52,8 @@ v1.1.0 Beta
 ```
 <script>
     simpleSlider.init({
-    	speed: 2500,
-    	containerClass: 'simple-slider-container'
+    	speed: 2000,	//default			
+    	containerClass: 'simple-slider-container'	//default
     }); 
 </script>
 ```
@@ -65,6 +65,6 @@ v1.1.0 Beta
 | speed | number | 2000 | Transition duration in ms |
 | autoplay | number | 6000 | Delay between transitions in ms |
 | containerClass | string | 'simple-slider-container' | Container class |
-| wrapperClass | string | 'simple-s-wrapper' | Wrapper class |
-| slideClass | string | 'simple-s-element' | Slide class |
-| buttonsClass | string | 'simple-s-btn' | Buttons class |
+| wrapperClass | string | 'slider-wrapper' | Wrapper class |
+| slideClass | string | 'slider-element' | Slide class |
+| buttonsClass | string | 'slider-btn' | Buttons class |

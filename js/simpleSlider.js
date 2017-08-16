@@ -1,8 +1,8 @@
 /*
 	Simple responsive slider created in pure javascript.
-	Author: Michał Strumpf
+	Author: Michał Strumpf https://github.com/michu2k
 	License: MIT
-	Version: v1.1.0 Beta
+	Version: v1.2.0
 */
 
 let simpleSlider = (()=> {
@@ -10,12 +10,12 @@ let simpleSlider = (()=> {
 
 	// Defaults
 	let defaults = {
-		speed: 				2000, 						// transition duration in ms 	
-		autoplay: 			6000, 						// delay between transitions in ms
-		containerClass: 	'simple-slider-container',	// container class
-		wrapperClass: 		'simple-s-wrapper',			// wrapper class
-		slideClass: 		'simple-s-element', 		// slide class
-		buttonsClass: 		'simple-s-btn'				// buttons class
+		speed:				2000,						// transition duration in ms 	
+		autoplay:			6000,						// delay between transitions in ms
+		containerClass:		'simple-slider-container',	// container class
+		wrapperClass:		'slider-wrapper',			// wrapper class
+		slideClass:			'slider-element',			// slide class
+		buttonsClass:		'slider-btn'				// buttons class
 	};
 
 	// Constans
@@ -24,10 +24,11 @@ let simpleSlider = (()=> {
 		  buttons = container.querySelectorAll(`.${defaults.buttonsClass}`),
 		  slides = document.querySelectorAll(`.${defaults.slideClass}`);
 
-	let index = 1,
-		auto;
+	let autoplay, index = 1;
 
-	// Clone first and last slide
+	/*
+		Clone first and last slide
+	*/
 	function createClones() {
 		let firstEl = wrapper.firstElementChild.cloneNode(true);
 		let lastEl = wrapper.lastElementChild.cloneNode(true);
@@ -37,34 +38,40 @@ let simpleSlider = (()=> {
 
 	createClones();
 
-	// Set wrapper width
-	function setWrapper() {
+	/*
+		Set elements width
+	*/
+	function setWidth() {
 		const slides = document.querySelectorAll(`.${defaults.slideClass}`);
+
+		// Wrapper 
 		let wrapperWidth = 0;
 		wrapperWidth = (container.offsetWidth + 1) * slides.length + 'px';
 		wrapper.style.width = wrapperWidth;	
-	}
 
-	// Set slide width
-	function setSlideWidth() {
-		const slides = document.querySelectorAll(`.${defaults.slideClass}`);
+		// Slides
 		for (let i = 0; i < slides.length; i++) {
 			slides[i].style.width = container.offsetWidth + 'px';
 		}
 	}
 
-	// Change wrapper position
+	/* 
+		Change wrapper position
+		index = current slider index [number]
+	*/	
 	function changeWrapperPos(index) {
 		if (typeof index === 'undefined') 
 			index = 1;
 
-		let transform = index * container.offsetWidth;
+		let pixels = index * container.offsetWidth;
 
-		wrapper.style.WebkitTransform = `translate3d( -${transform}px, 0, 0)`; 
-		wrapper.style.transform = `translate3d( -${transform}px, 0, 0)`; 
+		wrapper.style.WebkitTransform = `translate3d( -${pixels}px, 0, 0)`; 
+		wrapper.style.transform = `translate3d( -${pixels}px, 0, 0)`; 
 	}
 
-	// Set transition duration
+	/*
+		Set transition duration. When animation will end, transition is set to 0 
+	*/	
 	function setTransition() {
 		wrapper.style.WebkitTransitionDuration = defaults.speed + 'ms'; 
 		wrapper.style.transitionDuration = defaults.speed + 'ms';
@@ -75,19 +82,23 @@ let simpleSlider = (()=> {
 		}, defaults.speed);
 	}
 
-	// Call functions again when window is resized
+	/*
+		Call functions again when window is resized
+	*/	
 	function resize() {
 		window.addEventListener('resize', () => {
 			clearTimeout(window.resizeTimer);
 		    window.resizeTimer = setTimeout(() => {
-		    	setWrapper();
+		    	setWidth();
 		    	changeWrapperPos(index);
-		    	setSlideWidth();
-		    }, 200);	
+		    }, 100);	
 		});		
 	}
 
-	// Move slider 
+	/*
+		Move slider 
+		direction = slide direction [left, right]
+	*/	
 	function moveSlider(direction = null) {
 
 		if (buttons && buttons.length >= 2) {
@@ -121,7 +132,9 @@ let simpleSlider = (()=> {
 		changeWrapperPos(index);
 	}
 
-	// Disable buttons during animation 
+	/*
+		Disable buttons during animation 
+	*/	
 	function pointerEvents() {
 		buttons[0].style.pointerEvents = 'none';
 		buttons[1].style.pointerEvents = 'none';	
@@ -132,14 +145,19 @@ let simpleSlider = (()=> {
 		}, defaults.speed);		
 	}
 
-	// Slider autoplay
+	/*
+		Slider autoplay
+	*/	
 	function autoPlay() {
-		auto = setInterval(moveSlider, (defaults.autoplay + defaults.speed));
+		autoplay = setInterval(moveSlider, (defaults.autoplay + defaults.speed));
 	}
 
-	// Move slide to the right or to the left
+	/*
+		Move slide to the right or to the left
+		direction = slide direction [left, right]
+	*/	
 	function changeCurrSlide(direction) {
-		clearInterval(auto);
+		clearInterval(autoplay);
 		moveSlider(direction);
 
 		setTimeout(()=> {
@@ -147,18 +165,20 @@ let simpleSlider = (()=> {
 		}, defaults.speed);
 	}
 
-	// Slider core
+	/*
+		Slider core
+	*/	
 	function sliderCore() {
 
-		setWrapper();	
+		setWidth();
 		changeWrapperPos();
-		setSlideWidth();
 
 		autoPlay();
 		resize();
 
+		// Buttons
 		if (buttons && buttons.length >= 2) {
-			// Buttons
+
 			buttons[0].addEventListener('click', function() {
 				changeCurrSlide('left');
 			});	
@@ -169,7 +189,11 @@ let simpleSlider = (()=> {
 		}
 	}
 
-	// Extend defaults
+	/* 
+		Extend defaults
+		defaults = defaults options defined in script
+		properties = new options
+	*/
 	function extendDefaults(defaults, properties) {
 		for (let property in properties)
 			defaults[property] = properties[property];
@@ -177,7 +201,10 @@ let simpleSlider = (()=> {
 		return defaults;
 	}
 
-	// Initiate module
+	/*
+		Initialize the module
+		properties = new options
+	*/	
 	function _init(properties) {
 		extendDefaults(defaults, properties);
 		sliderCore();
