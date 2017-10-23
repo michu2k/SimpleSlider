@@ -39,7 +39,7 @@ v1.3.0
 ```
 
 ###### Initialize the module
-```
+```javascript
 <script>
     var slider = new simpleSlider('.simple-slider-first');
 </script>
@@ -51,12 +51,12 @@ v1.3.0
 
 new simpleSlider(container, options)
 
-	- container - string (required), selector of slider container
-    - options - object (optional), slider options
+* container - string (required), selector of slider container
+* options - object (optional), slider options
 
 You can initialize more than one slider per page.
 
-```
+```javascript
 <script>
 	// Default options
 	var slider = new simpleSlider('.simple-slider-first');	
