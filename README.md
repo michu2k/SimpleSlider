@@ -62,13 +62,13 @@ You can initialize more than one slider per page.
 	var slider = new simpleSlider('.simple-slider-first');	
 
 	// User options
-    var slider = new simpleSlider('.simple-slider-second', {
-    	speed: 2000, //default
-    	autoplay: true, //default
-    	classes: {
+	var slider = new simpleSlider('.simple-slider-second', {
+		speed: 2000, //default
+		autoplay: true, //default
+		classes: {
 			wrapper: 'slider-wrapper' //default
 		}
-    });
+	});
 </script>
 ```
 
