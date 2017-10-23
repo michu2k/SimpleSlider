@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="css/simpleSlider.css">
+	<link rel="stylesheet" href="css/simpleSlider.min.css">
 	<title>Simple Slider</title>
 
 	<style>
@@ -15,18 +15,33 @@
 </head>
 <body>
 
-<div class="simple-slider-container">
+<div class="simple-slider simple-slider-first">
 	<div class="slider-wrapper">
-		<div class="slider-element" style="background-image: url('https://placehold.it/1200x400')">
+		<div class="slider-slide" style="background-image: url('https://placehold.it/1200x400')">
 			First slide
 		</div>
 
-		<div class="slider-element" style="background-image: url('https://placehold.it/1200x400')">
+		<div class="slider-slide" style="background-image: url('https://placehold.it/1200x400')">
 			Second slide
 		</div>
 
-		<div class="slider-element" style="background-image: url('https://placehold.it/1200x400')">
+		<div class="slider-slide" style="background-image: url('https://placehold.it/1200x400')">
 			Third slide
+		</div>
+	</div>
+
+	<div class="slider-btn slider-btn-prev"></div>
+    <div class="slider-btn slider-btn-next"></div>
+</div>
+
+<div class="simple-slider simple-slider-second">
+	<div class="slider-wrapper">
+		<div class="slider-slide" style="background-image: url('https://placehold.it/1200x400')">
+			First slide
+		</div>
+
+		<div class="slider-slide" style="background-image: url('https://placehold.it/1200x400')">
+			Second slide
 		</div>
 	</div>
 
@@ -36,7 +51,8 @@
 
 <script src="js/simpleSlider.min.js"></script>
 <script>
-    simpleSlider.init(); 
+    var slider = new simpleSlider('.simple-slider-first', {speed: 500});
+   	var slider = new simpleSlider('.simple-slider-second');
 </script>
 
 </body>

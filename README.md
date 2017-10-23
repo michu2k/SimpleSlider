@@ -2,32 +2,32 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.2.0
+v1.3.0
 
 ## Usage
 
 ###### Include files
 ```html
-<link rel="stylesheet" href="css/simpleSlider.css"> 
+<link rel="stylesheet" href="css/simpleSlider.min.css"> 
 <script src="js/simpleSlider.min.js"></script>  
 ```
 
 ###### Create HTML layout
 ```html
-<div class="simple-slider-container">
+<div class="simple-slider simple-slider-first">
 	<div class="slider-wrapper">
 		<!-- First slide -->
-		<div class="slider-element" style="background-image: url('path/to/image.jpg')">
+		<div class="slider-slide" style="background-image: url('path/to/image')">
 			<!-- Any HTML content -->
 		</div>
 
 		<!-- Second slide -->
-		<div class="slider-element" style="background-image: url('path/to/image.jpg')">
+		<div class="slider-slide" style="background-image: url('path/to/image')">
 			<!-- Any HTML content -->
 		</div>
 
 		<!-- Third slide -->
-		<div class="slider-element" style="background-image: url('path/to/image.jpg')">
+		<div class="slider-slide" style="background-image: url('path/to/image')">
 			<!-- Any HTML content -->
 		</div>
 	</div>
@@ -41,7 +41,7 @@ v1.2.0
 ###### Initialize the module
 ```
 <script>
-    simpleSlider.init(); 
+    var slider = new simpleSlider('.simple-slider-first');
 </script>
 ```
 
@@ -49,12 +49,26 @@ v1.2.0
 
 ###### Example
 
+new simpleSlider(container, options)
+
+	- container - string (required), selector of slider container
+    - options - object (optional), slider options
+
+You can initialize more than one slider per page.
+
 ```
 <script>
-    simpleSlider.init({
-    	speed: 2000,	//default			
-    	containerClass: 'simple-slider-container'	//default
-    }); 
+	// Default options
+	var slider = new simpleSlider('.simple-slider-first');	
+
+	// User options
+    var slider = new simpleSlider('.simple-slider-second', {
+    	speed: 2000, //default
+    	autoplay: true, //default
+    	classes: {
+			wrapper: 'slider-wrapper' //default
+		}
+    });
 </script>
 ```
 
@@ -63,8 +77,8 @@ v1.2.0
 | Option  | Type | Default value | Description |
 | ----- | ----- | ----- | ----- |
 | speed | number | 2000 | Transition duration in ms |
-| autoplay | number | 6000 | Delay between transitions in ms |
-| containerClass | string | 'simple-slider-container' | Container class |
-| wrapperClass | string | 'slider-wrapper' | Wrapper class |
-| slideClass | string | 'slider-element' | Slide class |
-| buttonsClass | string | 'slider-btn' | Buttons class |
+| delay | number | 6000 | Delay between transitions in ms |
+| autoplay | boolean | true | slider autoplay |
+| classes: wrapper | string | 'slider-wrapper' | Wrapper class |
+| classes: slide | string | 'slider-slide' | Slide class |
+| classes: buttons | string | 'slider-btn' | Buttons class |

@@ -1,217 +1,232 @@
 /*
+	SimpleSlider v1.3.0
 	Simple responsive slider created in pure javascript.
-	Author: Michał Strumpf https://github.com/michu2k
-	License: MIT
-	Version: v1.2.0
-*/
+	https://github.com/michu2k/SimpleSlider
 
-let simpleSlider = (()=> {
+	Copyright 2017 Michał Strumpf
+	Published under MIT License
+*/
+(function(window) {
+
 	'use strict';
 
-	// Defaults
-	let defaults = {
-		speed:				2000,						// transition duration in ms 	
-		autoplay:			6000,						// delay between transitions in ms
-		containerClass:		'simple-slider-container',	// container class
-		wrapperClass:		'slider-wrapper',			// wrapper class
-		slideClass:			'slider-element',			// slide class
-		buttonsClass:		'slider-btn'				// buttons class
-	};
-
-	// Constans
-	const container = document.querySelector(`.${defaults.containerClass}`),
-		  wrapper = document.querySelector(`.${defaults.wrapperClass}`),
-		  buttons = container.querySelectorAll(`.${defaults.buttonsClass}`),
-		  slides = document.querySelectorAll(`.${defaults.slideClass}`);
-
-	let autoplay, index = 1;
-
 	/*
-		Clone first and last slide
+		simpleSlider
 	*/
-	function createClones() {
-		let firstEl = wrapper.firstElementChild.cloneNode(true);
-		let lastEl = wrapper.lastElementChild.cloneNode(true);
-		wrapper.appendChild(firstEl);
-		wrapper.insertBefore(lastEl, slides[0]);
-	}
+	let simpleSlider = function(selector, userOptions)
+	{
+		// Variables
+		let a, index, defaults, v = [];
 
-	createClones();
+		// Defaults
+		defaults = {
+			speed: 2000,		// transition duration in ms [number]
+			delay: 6000,		// delay between transitions in ms [number]
+			autoplay: true,		// slider autoplay [boolean]
+			classes: {
+				wrapper: 'slider-wrapper',		// wrapper class [string]
+				slide: 'slider-slide',		// slide class [string]
+				buttons: 'slider-btn'		// buttons class [string]
+			}
+		};
 
-	/*
-		Set elements width
-	*/
-	function setWidth() {
-		const slides = document.querySelectorAll(`.${defaults.slideClass}`);
+		v.options = extendDefaults(defaults, userOptions); // Set options
+		v.container = document.querySelector(selector);
+		v.wrapper = v.container.querySelector(`.${v.options.classes.wrapper}`);
+		v.buttons = v.container.querySelectorAll(`.${v.options.classes.buttons}`);
+		v.slides = v.container.querySelectorAll(`.${v.options.classes.slide}`);
+		v.selector = selector;
 
-		// Wrapper 
-		let wrapperWidth = 0;
-		wrapperWidth = (container.offsetWidth + 1) * slides.length + 'px';
-		wrapper.style.width = wrapperWidth;	
-
-		// Slides
-		for (let i = 0; i < slides.length; i++) {
-			slides[i].style.width = container.offsetWidth + 'px';
-		}
-	}
-
-	/* 
-		Change wrapper position
-		index = current slider index [number]
-	*/	
-	function changeWrapperPos(index) {
-		if (typeof index === 'undefined') 
-			index = 1;
-
-		let pixels = index * container.offsetWidth;
-
-		wrapper.style.WebkitTransform = `translate3d( -${pixels}px, 0, 0)`; 
-		wrapper.style.transform = `translate3d( -${pixels}px, 0, 0)`; 
-	}
-
-	/*
-		Set transition duration. When animation will end, transition is set to 0 
-	*/	
-	function setTransition() {
-		wrapper.style.WebkitTransitionDuration = defaults.speed + 'ms'; 
-		wrapper.style.transitionDuration = defaults.speed + 'ms';
-
-		setTimeout(()=> {
-			wrapper.style.WebkitTransitionDuration = 0 + 'ms'; 
-			wrapper.style.transitionDuration = 0 + 'ms';
-		}, defaults.speed);
-	}
-
-	/*
-		Call functions again when window is resized
-	*/	
-	function resize() {
-		window.addEventListener('resize', () => {
-			clearTimeout(window.resizeTimer);
-		    window.resizeTimer = setTimeout(() => {
-		    	setWidth();
-		    	changeWrapperPos(index);
-		    }, 100);	
-		});		
-	}
-
-	/*
-		Move slider 
-		direction = slide direction [left, right]
-	*/	
-	function moveSlider(direction = null) {
-
-		if (buttons && buttons.length >= 2) {
-			pointerEvents();
-		}
-		
-		// If index is bigger than slides.length, set index to 0 without animation
-		if (index > slides.length)	
-			index = 0;
-		else
-			setTransition();
-
-		let dr = (direction === 'left') ? index-- : index++;
-		
-		// Switch from last cloned to first slide
-		if (index > slides.length) {	
-			setTimeout(()=> {
-				changeWrapperPos();
-				index = 1;
-			}, defaults.speed);
-		}
-
-		// Switch from first cloned to last slide
-		if (index == 0) {	
-			setTimeout(()=> {
-				changeWrapperPos(slides.length);
-				index = slides.length;
-			}, defaults.speed);
-		}
-
-		changeWrapperPos(index);
-	}
-
-	/*
-		Disable buttons during animation 
-	*/	
-	function pointerEvents() {
-		buttons[0].style.pointerEvents = 'none';
-		buttons[1].style.pointerEvents = 'none';	
-
-		setTimeout(()=> {
-			buttons[0].style.pointerEvents = 'auto';
-			buttons[1].style.pointerEvents = 'auto';
-		}, defaults.speed);		
-	}
-
-	/*
-		Slider autoplay
-	*/	
-	function autoPlay() {
-		autoplay = setInterval(moveSlider, (defaults.autoplay + defaults.speed));
-	}
-
-	/*
-		Move slide to the right or to the left
-		direction = slide direction [left, right]
-	*/	
-	function changeCurrSlide(direction) {
-		clearInterval(autoplay);
-		moveSlider(direction);
-
-		setTimeout(()=> {
-			autoPlay();
-		}, defaults.speed);
-	}
-
-	/*
-		Slider core
-	*/	
-	function sliderCore() {
-
+		// Call functions
+		updateData();
+		createClones();
 		setWidth();
-		changeWrapperPos();
+		updateWrapper();
 
-		autoPlay();
-		resize();
+		// Enable slider autoplay
+		if (v.options.autoplay === true)
+			autoPlay();
 
 		// Buttons
-		if (buttons && buttons.length >= 2) {
+		if (v.buttons && v.buttons.length == 2) 
+		{
+			onButtonClick(0, 'left');
+			onButtonClick(1, 'right');
+		}
 
-			buttons[0].addEventListener('click', function() {
-				changeCurrSlide('left');
-			});	
+		/*
+			Slider main core
+			direction = move direction [string][left, right]
+		*/	
+		function sliderCore(direction)
+		{
+			if (typeof index === 'undefined') index = 1;
 
-			buttons[1].addEventListener('click', function() {
-				changeCurrSlide('right');
+			// Disable buttons
+			for (let i = 0; i < v.buttons.length; i++) 
+			{
+				v.buttons[i].style.pointerEvents = 'none';
+
+				setTimeout(function() {
+					v.buttons[i].style.pointerEvents = 'auto';
+				}, v.options.speed);
+			}
+
+			// If index is bigger than slides.length, set index to 1 without animation
+			if (index > v.slides.length)
+				index = 1;
+			else 
+			{
+				// Set transition duration. When animation will end, transition is set to 0
+				v.wrapper.style.WebkitTransitionDuration = v.options.speed + 'ms';
+				v.wrapper.style.transitionDuration = v.options.speed + 'ms';
+
+				setTimeout(function() {
+					v.wrapper.style.WebkitTransitionDuration = 0 + 'ms';
+					v.wrapper.style.transitionDuration = 0 + 'ms';
+				}, v.options.speed);
+			}
+
+			// Change index depending on the direction
+			if (direction != undefined && direction == 'left')
+				index--;
+			else
+				index++;
+			
+			// Switch from last cloned to first slide
+			if (index > v.slides.length)
+			{	
+				setTimeout(function() {
+					updateWrapper();
+					index = 1;
+				}, v.options.speed);
+			}
+
+			// Switch from first cloned to last slide
+			if (index == 0)
+			{	
+				setTimeout(function() {
+					updateWrapper(v.slides.length);
+					index = v.slides.length;
+				}, v.options.speed);
+			}
+
+			updateWrapper(index);
+		}
+
+		/*
+			Move slide when clicked on button
+			index = button number [number]
+			direction = move direction [string][left, right]
+		*/
+		function onButtonClick(index, direction)
+		{
+			v.buttons[index].addEventListener('click', function() {
+
+				sliderCore(direction);
+
+				if (v.options.autoplay === true)
+				{
+					clearInterval(a);
+					setTimeout(autoPlay, v.options.speed);
+				}
+			});
+		}
+
+		/*
+			Slider autoplay
+		*/
+		function autoPlay()
+		{
+			let delay = v.options.delay + v.options.speed;
+			a = setInterval(sliderCore, delay);
+		}
+	
+		/*
+			Call functions when window is resized
+		*/	
+		function updateData()
+		{
+			let resize;
+			window.addEventListener('resize', function() {
+				clearTimeout(resize);
+			    resize = setTimeout(function() {
+					setWidth();
+					updateWrapper(index);
+			    }, 100);
 			});	
+		}
+
+		/*
+			Change wrapper position
+			index = current slider index [number]
+		*/
+		function updateWrapper(index)
+		{
+			if (typeof index === 'undefined') index = 1;
+		
+			let pixels = index * v.container.offsetWidth;
+
+			// Moving wrapper by a certain number of pixels
+			v.wrapper = v.container.querySelector(`.${v.options.classes.wrapper}`);
+			v.wrapper.style.WebkitTransform = `translate3d( -${pixels}px, 0, 0)`;
+			v.wrapper.style.transform = `translate3d( -${pixels}px, 0, 0)`;
+		}
+
+		/*
+			Clone first and last slide and append them to the DOM
+		*/
+		function createClones()
+		{
+			let firstElement = v.wrapper.firstElementChild.cloneNode(true);
+			let lastElement = v.wrapper.lastElementChild.cloneNode(true);
+			v.wrapper.appendChild(firstElement);
+			v.wrapper.insertBefore(lastElement, v.slides[0]);
+		}
+
+		/*
+			Set wrapper and slides width
+		*/
+		function setWidth()
+		{
+			let i, slides, wrapperWidth;
+			slides = v.container.querySelectorAll(`.${v.options.classes.slide}`);
+
+			// Wrapper width
+			wrapperWidth = (v.container.offsetWidth + 1) * slides.length;
+			v.wrapper.style.width = wrapperWidth + 'px';
+
+			// Slides
+			for (i = 0; i < slides.length; i++)
+				slides[i].style.width = v.container.offsetWidth + 'px';
+		}
+
+		/* 
+			Extend defaults deep
+			defaults = defaults options defined in script
+			properties = new options
+		*/
+		function extendDefaults(defaults, properties)
+		{
+			let property, propertyDeep;
+
+			if (properties != undefined && properties != 'undefined')
+			{
+				for (property in properties)
+				{
+					if (typeof properties[property] === 'object')
+					{
+						for (propertyDeep in properties[property])
+						{
+							defaults[property][propertyDeep] = properties[property][propertyDeep];
+						}
+					} else defaults[property] = properties[property];
+				}
+			}
+			return defaults;
 		}
 	}
 
-	/* 
-		Extend defaults
-		defaults = defaults options defined in script
-		properties = new options
-	*/
-	function extendDefaults(defaults, properties) {
-		for (let property in properties)
-			defaults[property] = properties[property];
-		
-		return defaults;
-	}
+	window.simpleSlider = simpleSlider;
 
-	/*
-		Initialize the module
-		properties = new options
-	*/	
-	function _init(properties) {
-		extendDefaults(defaults, properties);
-		sliderCore();
-	}
-
-	return {
-		init: _init
-	}
-
-})();
+})(window);
