@@ -1,0 +1,29 @@
+{
+  "name": "simpleslider-js",
+  "version": "1.4.0",
+  "description": "Responsive slider created in pure Javascript",
+  "main": "dist/simpleSlider.js",
+  "scripts": {
+    "build": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michu2k/SimpleSlider.git"
+  },
+  "keywords": [
+    "slider",
+    "javascript",
+    "simple",
+    "carousel"
+  ],
+  "author": "Michał Strumpf",
+  "homepage": "https://github.com/michu2k/SimpleSlider#readme",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michu2k/SimpleSlider/issues"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
+  }
+}

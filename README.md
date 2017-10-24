@@ -2,14 +2,20 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.3.0
+v1.4.0
 
 ## Usage
+On production use files (JS and CSS) only from **dist/** folder
+
+## Install
+```
+npm install simpleslider-js --save
+```
 
 ###### Include files
 ```html
-<link rel="stylesheet" href="css/simpleSlider.min.css"> 
-<script src="js/simpleSlider.min.js"></script>  
+<link rel="stylesheet" href="simpleSlider.min.css"> 
+<script src="simpleSlider.min.js"></script>  
 ```
 
 ###### Create HTML layout
