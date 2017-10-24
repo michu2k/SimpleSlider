@@ -2,14 +2,14 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.4.0
+v1.4.1
 
 ## Usage
 On production use files (JS and CSS) only from **dist/** folder
 
 ## Install
 ```
-npm install simpleslider-js --save
+npm install simpleslider-js
 ```
 
 ###### Include files
