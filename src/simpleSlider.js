@@ -1,18 +1,16 @@
-/*
-	SimpleSlider v1.4.1
-	Simple responsive slider created in pure javascript.
-	https://github.com/michu2k/SimpleSlider
-
-	Copyright 2017 Michał Strumpf
-	Published under MIT License
-*/
+/**
+  * SimpleSlider v1.5.0
+  * Simple responsive slider created in pure javascript.
+  * https://github.com/michu2k/SimpleSlider
+  *
+  * Copyright 2017 Michał Strumpf
+  * Published under MIT License
+  */
 (function(window) {
 
 	'use strict';
 
-	/*
-		simpleSlider
-	*/
+	/* simpleSlider */
 	let simpleSlider = function(selector, userOptions)
 	{
 		// Variables
@@ -24,13 +22,15 @@
 			delay: 6000,		// delay between transitions in ms [number]
 			autoplay: true,		// slider autoplay [boolean]
 			classes: {
-				wrapper: 'slider-wrapper',		// wrapper class [string]
+				wrapper: 'slider-wrapper',	// wrapper class [string]
 				slide: 'slider-slide',		// slide class [string]
 				buttons: 'slider-btn'		// buttons class [string]
 			}
 		};
 
-		v.options = extendDefaults(defaults, userOptions); // Set options
+		// Set options
+		v.options = extendDefaults(defaults, userOptions); 
+
 		v.container = document.querySelector(selector);
 		v.wrapper = v.container.querySelector(`.${v.options.classes.wrapper}`);
 		v.buttons = v.container.querySelectorAll(`.${v.options.classes.buttons}`);
@@ -50,48 +50,30 @@
 		// Buttons
 		if (v.buttons && v.buttons.length == 2) 
 		{
-			onButtonClick(0, 'left');
-			onButtonClick(1, 'right');
+			btnClick(0, 'left');
+			btnClick(1, 'right');
 		}
 
-		/*
-			Slider main core
-			direction = move direction [string][left, right]
-		*/	
+		/**
+		  * Slider main core
+		  * direction = move direction [string][left, right]
+		  */	
 		function sliderCore(direction)
 		{
 			if (typeof index === 'undefined') index = 1;
 
-			// Disable buttons
-			for (let i = 0; i < v.buttons.length; i++) 
-			{
-				v.buttons[i].style.pointerEvents = 'none';
-
-				setTimeout(function() {
-					v.buttons[i].style.pointerEvents = 'auto';
-				}, v.options.speed);
-			}
-
-			// If index is bigger than slides.length, set index to 1 without animation
-			if (index > v.slides.length)
-				index = 1;
-			else 
-			{
-				// Set transition duration. When animation will end, transition is set to 0
-				v.wrapper.style.WebkitTransitionDuration = v.options.speed + 'ms';
-				v.wrapper.style.transitionDuration = v.options.speed + 'ms';
-
-				setTimeout(function() {
-					v.wrapper.style.WebkitTransitionDuration = 0 + 'ms';
-					v.wrapper.style.transitionDuration = 0 + 'ms';
-				}, v.options.speed);
-			}
-
 			// Change index depending on the direction
-			if (direction != undefined && direction == 'left')
+			if (direction == 'left')
 				index--;
 			else
 				index++;
+
+			// Set transition
+			setTransition(v.options.speed, 'none');
+
+			setTimeout(function() {
+				setTransition(0, 'auto');
+			}, v.options.speed);
 			
 			// Switch from last cloned to first slide
 			if (index > v.slides.length)
@@ -114,15 +96,29 @@
 			updateWrapper(index);
 		}
 
-		/*
-			Move slide when clicked on button
-			index = button number [number]
-			direction = move direction [string][left, right]
-		*/
-		function onButtonClick(index, direction)
+		/** 
+		  * Set transition duration and enable/disable buttons 
+		  * speed = speed value in miliseconds [number]
+		  * event = pointer event value [string]
+		  */
+		function setTransition(speed, event)
+		{
+			let transition = getSupportedProperty('TransitionDuration');
+			v.wrapper.style[transition] = speed + 'ms';
+
+			v.buttons[0].style.pointerEvents = event;
+			v.buttons[1].style.pointerEvents = event;
+		}
+
+		/**
+		  * Move slide when clicked on button
+		  * index = button number [number]
+		  * direction = move direction [string][left, right]
+		  */
+		function btnClick(index, direction)
 		{
 			v.buttons[index].addEventListener('click', function() {
-
+				
 				sliderCore(direction);
 
 				if (v.options.autoplay === true)
@@ -133,23 +129,20 @@
 			});
 		}
 
-		/*
-			Slider autoplay
-		*/
+		/* Slider autoplay */
 		function autoPlay()
 		{
 			let delay = v.options.delay + v.options.speed;
 			a = setInterval(sliderCore, delay);
 		}
 	
-		/*
-			Call functions when window is resized
-		*/	
+		/* Call functions when window is resized */	
 		function updateData()
 		{
 			let resize;
 			window.addEventListener('resize', function() {
 				clearTimeout(resize);
+
 			    resize = setTimeout(function() {
 					setWidth();
 					updateWrapper(index);
@@ -157,36 +150,32 @@
 			});	
 		}
 
-		/*
-			Change wrapper position
-			index = current slider index [number]
-		*/
+		/**
+		  * Change wrapper position by a certain number of pixels
+		  * index = current slider index [number]
+		  */
 		function updateWrapper(index)
 		{
 			if (typeof index === 'undefined') index = 1;
 		
 			let pixels = index * v.container.offsetWidth;
-
-			// Moving wrapper by a certain number of pixels
 			v.wrapper = v.container.querySelector(`.${v.options.classes.wrapper}`);
-			v.wrapper.style.WebkitTransform = `translate3d( -${pixels}px, 0, 0)`;
-			v.wrapper.style.transform = `translate3d( -${pixels}px, 0, 0)`;
+
+			let transform = getSupportedProperty('Transform');
+			v.wrapper.style[transform] = `translate3d( -${pixels}px, 0, 0)`;
 		}
 
-		/*
-			Clone first and last slide and append them to the DOM
-		*/
+		/* Clone first and last slide and append them to the DOM */
 		function createClones()
 		{
 			let firstElement = v.wrapper.firstElementChild.cloneNode(true);
 			let lastElement = v.wrapper.lastElementChild.cloneNode(true);
+
 			v.wrapper.appendChild(firstElement);
 			v.wrapper.insertBefore(lastElement, v.slides[0]);
 		}
 
-		/*
-			Set wrapper and slides width
-		*/
+		/* Set wrapper and slides width */
 		function setWidth()
 		{
 			let i, slides, wrapperWidth;
@@ -198,14 +187,41 @@
 
 			// Slides
 			for (i = 0; i < slides.length; i++)
+			{
 				slides[i].style.width = v.container.offsetWidth + 'px';
+			}
 		}
 
-		/* 
-			Extend defaults deep
-			defaults = defaults options defined in script
-			properties = new options
-		*/
+		/**
+		  * Get supported property and add prefix if needed
+		  * property = property name [string]
+		  */
+		function getSupportedProperty(property)
+		{
+			let prefix = ['-', 'webkit', 'moz', 'ms', 'o'];
+			let i, propertyWithPrefix;
+
+			for (i = 0; i < prefix.length; i++) 
+			{
+				if (prefix[i] == '-')
+					propertyWithPrefix = property.toLowerCase();
+				else
+					propertyWithPrefix = prefix[i] + property;
+
+				if (typeof document.body.style[propertyWithPrefix] != 'undefined')
+				{
+		           return propertyWithPrefix;
+		        }
+			}
+
+			return null;
+		}
+
+		/**
+		  * Extend defaults deep
+		  * defaults = defaults options defined in script
+		  * properties = new options
+		  */
 		function extendDefaults(defaults, properties)
 		{
 			let property, propertyDeep;

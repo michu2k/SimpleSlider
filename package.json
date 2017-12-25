@@ -1,6 +1,6 @@
 {
   "name": "simpleslider-js",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Responsive slider created in pure Javascript",
   "main": "dist/simpleSlider.js",
   "scripts": {

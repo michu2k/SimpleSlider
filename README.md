@@ -2,7 +2,7 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.4.1
+v1.5.0
 
 ## Usage
 On production use files (JS and CSS) only from **dist/** folder
