@@ -1,5 +1,5 @@
 /**
-  * SimpleSlider v1.5.0
+  * SimpleSlider v1.5.1
   * Simple responsive slider created in pure javascript.
   * https://github.com/michu2k/SimpleSlider
   *
@@ -103,8 +103,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			var transition = getSupportedProperty('TransitionDuration');
 			v.wrapper.style[transition] = speed + 'ms';
 
-			v.buttons[0].style.pointerEvents = event;
-			v.buttons[1].style.pointerEvents = event;
+			if (v.buttons && v.buttons.length == 2) {
+				v.buttons[0].style.pointerEvents = event;
+				v.buttons[1].style.pointerEvents = event;
+			}
 		}
 
 		/**
