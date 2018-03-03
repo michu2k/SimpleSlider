@@ -2,7 +2,7 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.5.1
+v1.6.0
 
 ## Usage
 On production use files (JS and CSS) only from **dist/** folder
@@ -85,6 +85,9 @@ You can initialize more than one slider per page.
 | speed | number | 2000 | Transition duration in ms |
 | delay | number | 6000 | Delay between transitions in ms |
 | autoplay | boolean | true | slider autoplay |
+| animation | boolean | true | turn on/off slider animation |
 | classes: wrapper | string | 'slider-wrapper' | Wrapper class |
 | classes: slide | string | 'slider-slide' | Slide class |
 | classes: buttons | string | 'slider-btn' | Buttons class |
+| classes: pagination | string | 'slider-pagination' | Pagination class |
+| classes: paginationItem | string | 'pagination-bullet' | pagination bullet class |
