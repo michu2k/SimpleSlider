@@ -1,12 +1,13 @@
 @charset "UTF-8";
 /**
-  * SimpleSlider v1.5.1
-  * Simple responsive slider created in pure javascript.
-  * https://github.com/michu2k/SimpleSlider
-  * 
-  * Copyright 2017 Michał Strumpf
-  * Published under MIT License
-  */
+ * SimpleSlider v1.6.0
+ * Simple responsive slider created in pure javascript.
+ * https://github.com/michu2k/SimpleSlider
+ * 
+ * Copyright 2017-2018 Michał Strumpf
+ * Published under MIT License
+ */
+
 // Slider container
 .simple-slider {
 	width: 100%;
@@ -22,7 +23,11 @@
 		position: relative;
 		-webkit-transform: translate3d(0, 0, 0);
 			-ms-transform: translate3d(0, 0, 0);
+			 -o-transform: translate3d(0, 0, 0);
 				transform: translate3d(0, 0, 0);
+		-webkit-transition-timing-function: ease-in-out;	
+			 -o-transition-timing-function: ease-in-out;	
+				transition-timing-function: ease-in-out;		
 	}
 
 	// Slide
@@ -35,6 +40,33 @@
 		position: relative;	
 	}
 
+	// Navigation
+	.slider-pagination {
+		text-align: center;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		position: absolute;
+
+		// Bullet
+		.pagination-bullet {
+			display: inline-block;
+			cursor: pointer;
+			width: 12px;
+			height: 12px;
+			background-color: #fff;
+			border-radius: 50%;
+			margin: 2px;
+
+			&.active {
+				background-color: #999;
+			}
+		}
+	}
+
 	// Buttons
 	.slider-btn {
 		width: 30px;
@@ -44,7 +76,8 @@
 		background-repeat: no-repeat;
 		position: absolute;
 		-webkit-transform: translate(0, -50%);
-			-ms-transform: translate(0, -50%);	
+			-ms-transform: translate(0, -50%);
+			 -o-transform: translate(0, -50%);
 				transform: translate(0, -50%);	
 
 		&.slider-btn-prev {

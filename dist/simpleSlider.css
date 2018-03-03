@@ -1,12 +1,12 @@
 @charset "UTF-8";
 /**
-  * SimpleSlider v1.5.1
-  * Simple responsive slider created in pure javascript.
-  * https://github.com/michu2k/SimpleSlider
-  * 
-  * Copyright 2017 Michał Strumpf
-  * Published under MIT License
-  */
+ * SimpleSlider v1.6.0
+ * Simple responsive slider created in pure javascript.
+ * https://github.com/michu2k/SimpleSlider
+ * 
+ * Copyright 2017-2018 Michał Strumpf
+ * Published under MIT License
+ */
 .simple-slider {
   width: 100%;
   height: 300px;
@@ -20,7 +20,11 @@
   position: relative;
   -webkit-transform: translate3d(0, 0, 0);
   -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
+  -webkit-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
 }
 .simple-slider .slider-slide {
   background-size: cover;
@@ -29,6 +33,28 @@
   height: 100%;
   float: left;
   position: relative;
+}
+.simple-slider .slider-pagination {
+  text-align: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+}
+.simple-slider .slider-pagination .pagination-bullet {
+  display: inline-block;
+  cursor: pointer;
+  width: 12px;
+  height: 12px;
+  background-color: #fff;
+  border-radius: 50%;
+  margin: 2px;
+}
+.simple-slider .slider-pagination .pagination-bullet.active {
+  background-color: #999;
 }
 .simple-slider .slider-btn {
   width: 30px;
@@ -39,6 +65,7 @@
   position: absolute;
   -webkit-transform: translate(0, -50%);
   -ms-transform: translate(0, -50%);
+  -o-transform: translate(0, -50%);
   transform: translate(0, -50%);
 }
 .simple-slider .slider-btn.slider-btn-prev {
