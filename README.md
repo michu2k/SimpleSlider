@@ -2,7 +2,7 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.6.0
+v1.6.2
 
 ## Usage
 On production use files (JS and CSS) only from **dist/** folder
@@ -21,25 +21,25 @@ npm install simpleslider-js
 ###### Create HTML layout
 ```html
 <div class="simple-slider simple-slider-first">
-	<div class="slider-wrapper">
-		<!-- First slide -->
-		<div class="slider-slide" style="background-image: url('path/to/image')">
-			<!-- Any HTML content -->
-		</div>
+    <div class="slider-wrapper">
+        <!-- First slide -->
+        <div class="slider-slide" style="background-image: url('path/to/image')">
+            <!-- Any HTML content -->
+        </div>
 
-		<!-- Second slide -->
-		<div class="slider-slide" style="background-image: url('path/to/image')">
-			<!-- Any HTML content -->
-		</div>
+        <!-- Second slide -->
+        <div class="slider-slide" style="background-image: url('path/to/image')">
+            <!-- Any HTML content -->
+        </div>
 
-		<!-- Third slide -->
-		<div class="slider-slide" style="background-image: url('path/to/image')">
-			<!-- Any HTML content -->
-		</div>
-	</div>
+        <!-- Third slide -->
+        <div class="slider-slide" style="background-image: url('path/to/image')">
+            <!-- Any HTML content -->
+        </div>
+    </div>
 
-	<!-- Buttons (Not required) -->
-	<div class="slider-btn slider-btn-prev"></div>
+    <!-- Buttons (Not required) -->
+    <div class="slider-btn slider-btn-prev"></div>
     <div class="slider-btn slider-btn-next"></div> 
 </div>
 ```
@@ -64,17 +64,17 @@ You can initialize more than one slider per page.
 
 ```javascript
 <script>
-	// Default options
-	var slider = new simpleSlider('.simple-slider-first');	
+    // Default options
+    var slider = new simpleSlider('.simple-slider-first');  
 
-	// User options
-	var slider = new simpleSlider('.simple-slider-second', {
-		speed: 2000, //default
-		autoplay: true, //default
-		classes: {
-			wrapper: 'slider-wrapper' //default
-		}
-	});
+    // User options
+    var slider = new simpleSlider('.simple-slider-second', {
+        speed: 2000, //default
+        autoplay: true, //default
+        classes: {
+            wrapper: 'slider-wrapper' //default
+        }
+    });
 </script>
 ```
 
@@ -85,7 +85,6 @@ You can initialize more than one slider per page.
 | speed | number | 2000 | Transition duration in ms |
 | delay | number | 6000 | Delay between transitions in ms |
 | autoplay | boolean | true | slider autoplay |
-| animation | boolean | true | turn on/off slider animation |
 | classes: wrapper | string | 'slider-wrapper' | Wrapper class |
 | classes: slide | string | 'slider-slide' | Slide class |
 | classes: buttons | string | 'slider-btn' | Buttons class |

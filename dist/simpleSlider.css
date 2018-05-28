@@ -1,6 +1,6 @@
 @charset "UTF-8";
-/**
- * SimpleSlider v1.6.0
+/*!
+ * SimpleSlider v1.6.2
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  * 
@@ -48,10 +48,9 @@
   display: inline-block;
   cursor: pointer;
   width: 12px;
-  height: 12px;
+  height: 6px;
   background-color: #fff;
-  border-radius: 50%;
-  margin: 2px;
+  margin: 3px;
 }
 .simple-slider .slider-pagination .pagination-bullet.active {
   background-color: #999;
