@@ -2,15 +2,20 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-v1.6.2
+1.6.2
 
-## Usage
-On production use files (JS and CSS) only from **dist/** folder
+## Installation
 
-## Install
+###### npm
 ```
 npm install simpleslider-js
 ```
+
+###### Github
+You can also download files from github.
+
+## Usage
+On production use files (JS and CSS) only from **dist/** folder
 
 ###### Include files
 ```html
@@ -54,7 +59,6 @@ npm install simpleslider-js
 ## API
 
 ###### Example
-
 new simpleSlider(container, options)
 
 * container - string (required), selector of slider container
