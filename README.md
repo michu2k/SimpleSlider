@@ -43,6 +43,9 @@ On production use files (JS and CSS) only from **dist/** folder
         </div>
     </div>
 
+    <!--Pagination (Not required)-->
+    <div class="slider-pagination"></div>
+
     <!-- Buttons (Not required) -->
     <div class="slider-btn slider-btn-prev"></div>
     <div class="slider-btn slider-btn-next"></div> 
