@@ -1,5 +1,5 @@
-/**
- * SimpleSlider v1.6.2
+/*!
+ * SimpleSlider v1.6.3
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  *
@@ -18,10 +18,10 @@
      * @param {string} selector = container, where script will be defined
      * @param {object} userOptions = options defined by user
      */
-    let simpleSlider = function(selector, userOptions)
+    slider.simpleSlider = (selector, userOptions) =>
     {
         let defaults;
-        let v = [];
+        let v = {};
 
         // Defaults
         defaults = {
@@ -49,9 +49,9 @@
 
         // Vars
         v.disableEvent = false;
-        v.index = 1;
+        v.index = 0;
         v.timer;
-        v.playDelay = v.options.delay + v.options.speed;
+        v.autoplayDelay = v.options.delay + v.options.speed;
 
         // Call functions
         slider.createClones(v);
@@ -64,7 +64,7 @@
         }
 
         // Autoplay
-        if (v.options.autoplay === true) {
+        if (v.options.autoplay) {
             slider.autoplay(v);
         }
 
@@ -77,7 +77,8 @@
         window.addEventListener('resize', () => {
             slider.setWidth(v);
             slider.moveWrapper(v);
-        });        
+            slider.setTransition(0, v.wrapper);
+        });
     }
 
     /**
@@ -102,7 +103,7 @@
         slider.setTransition(vars.options.speed, vars.wrapper);
 
         // Switch from the cloned slide to the proper slide
-        if (vars.index == 0 || vars.index > vars.slides.length) {   
+        if (vars.index < 0 || vars.index >= vars.slides.length) {   
             setTimeout(() => {
                 // Set transition duration
                 slider.setTransition(0, vars.wrapper);
@@ -163,11 +164,13 @@
 
                 if (!vars.disableEvent) { 
 
-                    vars.index = i;
+                    vars.index = i - 1;
                     slider.moveSlider(vars);
 
                     // Reset autoplay
-                    slider.resetAutoplay(vars);
+                    if (vars.options.autoplay) {
+                        slider.resetAutoplay(vars);
+                    }
                 }
             });
         }
@@ -180,7 +183,6 @@
     slider.highlightBullet = (vars) =>
     {
         let bullets = vars.pagination.querySelectorAll(`.${vars.options.classes.paginationItem}`);
-        let previousBullet;
         let index = slider.updateIndex(vars.index, vars.slides.length);
 
         // Remove active class
@@ -192,7 +194,7 @@
         }
 
         // Add class to active bullet
-        bullets[index - 1].classList.add('active');
+        bullets[index].classList.add('active');
     }
 
     /**
@@ -211,7 +213,9 @@
                     slider.moveSlider(vars, direction[i]);
 
                     // Reset autoplay
-                    slider.resetAutoplay(vars);
+                    if (vars.options.autoplay) {
+                        slider.resetAutoplay(vars);
+                    }
                 }
             });
         }
@@ -237,9 +241,10 @@
      */
     slider.autoplay = (vars) =>
     {
-        vars.timer = setInterval(() => {
+        vars.timer = setTimeout(() => {
             slider.moveSlider(vars);
-        }, vars.playDelay);
+            slider.autoplay(vars);
+        }, vars.autoplayDelay);
     }
 
     /**
@@ -248,16 +253,10 @@
      */
     slider.resetAutoplay = (vars) =>
     {
-        if (vars.options.autoplay === true) {
-
-           clearInterval(vars.timer);
-
-            setTimeout(() => {
-                slider.autoplay(vars);
-            }, vars.options.speed); 
-        }
+        clearTimeout(vars.timer);
+        slider.autoplay(vars);
     }
-
+ 
     /** 
      * Set transition duration
      * @param {number} speed = speed value in miliseconds
@@ -275,10 +274,15 @@
      */
     slider.moveWrapper = (vars) =>
     {
-        let pixels = vars.index * vars.container.offsetWidth;
+        let pixels = 0;
+        let slides = vars.container.querySelectorAll(`.${vars.options.classes.slide}`);
+
+        for(let i = 0; i <= vars.index; i++)
+        {
+            pixels += slides[i].offsetWidth;
+        }
+
         let transform = slider.getSupportedProperty('Transform');
-         
-        vars.wrapper = vars.container.querySelector(`.${vars.options.classes.wrapper}`);
         vars.wrapper.style[transform] = `translate3d( -${pixels}px, 0, 0)`;
     }
 
@@ -288,18 +292,19 @@
      */
     slider.setWidth = (vars) =>
     {
-        let wrapperWidth;
+        let wrapperWidth = 0;
         let slides = vars.container.querySelectorAll(`.${vars.options.classes.slide}`);
 
-        // Wrapper width
-        wrapperWidth = vars.container.offsetWidth * slides.length;
-        vars.wrapper.style.width = wrapperWidth + 'px';
-
-        // Slides width
-        for (let i = 0; i < slides.length; i++)
+        for(let i = 0; i < slides.length; i++)
         {
+            // Slide width
             slides[i].style.width = vars.container.offsetWidth + 'px';
-        }       
+
+            // Wrapper width
+            wrapperWidth += slides[i].offsetWidth;
+        } 
+
+        vars.wrapper.style.width = wrapperWidth + 'px';     
     }
 
     /**
@@ -323,12 +328,12 @@
      */
     slider.updateIndex = (index, slides) =>
     {
-        if (index > slides) {
-            index = 1;
+        if (index >= slides) {
+            index = 0;
         }
 
-        if (index == 0) {
-            index = slides;
+        if (index < 0) {
+            index = slides - 1;
         }
 
         return index;
@@ -390,6 +395,6 @@
         return defaults;
     }
 
-    window.simpleSlider = simpleSlider;
+    window.simpleSlider = slider.simpleSlider;
 
 })(window);

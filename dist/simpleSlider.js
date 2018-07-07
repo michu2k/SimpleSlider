@@ -1,12 +1,12 @@
-/**
- * SimpleSlider v1.6.2
+/*!
+ * SimpleSlider v1.6.3
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
- *
+ * 
  * Copyright 2017-2018 Michał Strumpf
  * Published under MIT License
  */
- 
+
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -22,9 +22,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param {string} selector = container, where script will be defined
      * @param {object} userOptions = options defined by user
      */
-    var simpleSlider = function simpleSlider(selector, userOptions) {
+    slider.simpleSlider = function (selector, userOptions) {
         var defaults = void 0;
-        var v = [];
+        var v = {};
 
         // Defaults
         defaults = {
@@ -52,9 +52,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         // Vars
         v.disableEvent = false;
-        v.index = 1;
+        v.index = 0;
         v.timer;
-        v.playDelay = v.options.delay + v.options.speed;
+        v.autoplayDelay = v.options.delay + v.options.speed;
 
         // Call functions
         slider.createClones(v);
@@ -67,7 +67,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         // Autoplay
-        if (v.options.autoplay === true) {
+        if (v.options.autoplay) {
             slider.autoplay(v);
         }
 
@@ -80,6 +80,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         window.addEventListener('resize', function () {
             slider.setWidth(v);
             slider.moveWrapper(v);
+            slider.setTransition(0, v.wrapper);
         });
     };
 
@@ -106,7 +107,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         slider.setTransition(vars.options.speed, vars.wrapper);
 
         // Switch from the cloned slide to the proper slide
-        if (vars.index == 0 || vars.index > vars.slides.length) {
+        if (vars.index < 0 || vars.index >= vars.slides.length) {
             setTimeout(function () {
                 // Set transition duration
                 slider.setTransition(0, vars.wrapper);
@@ -163,11 +164,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 if (!vars.disableEvent) {
 
-                    vars.index = i;
+                    vars.index = i - 1;
                     slider.moveSlider(vars);
 
                     // Reset autoplay
-                    slider.resetAutoplay(vars);
+                    if (vars.options.autoplay) {
+                        slider.resetAutoplay(vars);
+                    }
                 }
             });
         };
@@ -183,7 +186,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      */
     slider.highlightBullet = function (vars) {
         var bullets = vars.pagination.querySelectorAll('.' + vars.options.classes.paginationItem);
-        var previousBullet = void 0;
         var index = slider.updateIndex(vars.index, vars.slides.length);
 
         // Remove active class
@@ -194,7 +196,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         // Add class to active bullet
-        bullets[index - 1].classList.add('active');
+        bullets[index].classList.add('active');
     };
 
     /**
@@ -211,7 +213,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     slider.moveSlider(vars, direction[i]);
 
                     // Reset autoplay
-                    slider.resetAutoplay(vars);
+                    if (vars.options.autoplay) {
+                        slider.resetAutoplay(vars);
+                    }
                 }
             });
         };
@@ -239,9 +243,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param {object} vars = list of variables
      */
     slider.autoplay = function (vars) {
-        vars.timer = setInterval(function () {
+        vars.timer = setTimeout(function () {
             slider.moveSlider(vars);
-        }, vars.playDelay);
+            slider.autoplay(vars);
+        }, vars.autoplayDelay);
     };
 
     /**
@@ -249,14 +254,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param {object} vars = list of variables
      */
     slider.resetAutoplay = function (vars) {
-        if (vars.options.autoplay === true) {
-
-            clearInterval(vars.timer);
-
-            setTimeout(function () {
-                slider.autoplay(vars);
-            }, vars.options.speed);
-        }
+        clearTimeout(vars.timer);
+        slider.autoplay(vars);
     };
 
     /** 
@@ -274,10 +273,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param {object} vars = list of variables
      */
     slider.moveWrapper = function (vars) {
-        var pixels = vars.index * vars.container.offsetWidth;
-        var transform = slider.getSupportedProperty('Transform');
+        var pixels = 0;
+        var slides = vars.container.querySelectorAll('.' + vars.options.classes.slide);
 
-        vars.wrapper = vars.container.querySelector('.' + vars.options.classes.wrapper);
+        for (var i = 0; i <= vars.index; i++) {
+            pixels += slides[i].offsetWidth;
+        }
+
+        var transform = slider.getSupportedProperty('Transform');
         vars.wrapper.style[transform] = 'translate3d( -' + pixels + 'px, 0, 0)';
     };
 
@@ -286,17 +289,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param {object} vars = list of variables
      */
     slider.setWidth = function (vars) {
-        var wrapperWidth = void 0;
+        var wrapperWidth = 0;
         var slides = vars.container.querySelectorAll('.' + vars.options.classes.slide);
 
-        // Wrapper width
-        wrapperWidth = vars.container.offsetWidth * slides.length;
-        vars.wrapper.style.width = wrapperWidth + 'px';
-
-        // Slides width
         for (var i = 0; i < slides.length; i++) {
+            // Slide width
             slides[i].style.width = vars.container.offsetWidth + 'px';
+
+            // Wrapper width
+            wrapperWidth += slides[i].offsetWidth;
         }
+
+        vars.wrapper.style.width = wrapperWidth + 'px';
     };
 
     /**
@@ -318,12 +322,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @return {number} index = index value after correction
      */
     slider.updateIndex = function (index, slides) {
-        if (index > slides) {
-            index = 1;
+        if (index >= slides) {
+            index = 0;
         }
 
-        if (index == 0) {
-            index = slides;
+        if (index < 0) {
+            index = slides - 1;
         }
 
         return index;
@@ -380,5 +384,5 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return defaults;
     };
 
-    window.simpleSlider = simpleSlider;
+    window.simpleSlider = slider.simpleSlider;
 })(window);

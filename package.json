@@ -1,11 +1,8 @@
 {
   "name": "simpleslider-js",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Responsive slider created in pure Javascript",
   "main": "dist/simpleSlider.js",
-  "scripts": {
-    "build": "babel src -d dist"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/michu2k/SimpleSlider.git"
@@ -24,6 +21,13 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1"
+    "babel-preset-env": "^1.6.1",
+    "browser-sync": "^2.24.5",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
+    "gulp-clean-css": "^3.9.4",
+    "gulp-rename": "^1.3.0",
+    "gulp-sass": "^4.0.1",
+    "gulp-uglify": "^3.0.0"
   }
 }

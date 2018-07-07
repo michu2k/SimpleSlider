@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * SimpleSlider v1.6.2
+ * SimpleSlider v1.6.3
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  * 
@@ -15,6 +15,7 @@
   z-index: 4;
   position: relative;
 }
+
 .simple-slider .slider-wrapper {
   height: 100%;
   position: relative;
@@ -22,10 +23,11 @@
   -ms-transform: translate3d(0, 0, 0);
   -o-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
-  -webkit-transition-timing-function: ease-in-out;
-  -o-transition-timing-function: ease-in-out;
-  transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
+  -o-transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
+  transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
 }
+
 .simple-slider .slider-slide {
   background-size: cover;
   background-repeat: no-repeat;
@@ -34,6 +36,7 @@
   float: left;
   position: relative;
 }
+
 .simple-slider .slider-pagination {
   text-align: center;
   list-style-type: none;
@@ -44,6 +47,7 @@
   right: 0;
   position: absolute;
 }
+
 .simple-slider .slider-pagination .pagination-bullet {
   display: inline-block;
   cursor: pointer;
@@ -52,9 +56,11 @@
   background-color: #fff;
   margin: 3px;
 }
+
 .simple-slider .slider-pagination .pagination-bullet.active {
   background-color: #999;
 }
+
 .simple-slider .slider-btn {
   width: 30px;
   height: 50px;
@@ -67,11 +73,13 @@
   -o-transform: translate(0, -50%);
   transform: translate(0, -50%);
 }
+
 .simple-slider .slider-btn.slider-btn-prev {
   left: 20px;
   background-image: url(../img/prev.svg);
   background-position: left;
 }
+
 .simple-slider .slider-btn.slider-btn-next {
   right: 20px;
   background-image: url(../img/next.svg);

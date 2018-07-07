@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * SimpleSlider v1.6.2
+ * SimpleSlider v1.6.3
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  * 
@@ -25,9 +25,9 @@
             -ms-transform: translate3d(0, 0, 0);
              -o-transform: translate3d(0, 0, 0);
                 transform: translate3d(0, 0, 0);
-        -webkit-transition-timing-function: ease-in-out;
-             -o-transition-timing-function: ease-in-out;
-                transition-timing-function: ease-in-out;
+        -webkit-transition-timing-function: cubic-bezier(.7,0,.3,1);
+             -o-transition-timing-function: cubic-bezier(.7,0,.3,1);
+                transition-timing-function: cubic-bezier(.7,0,.3,1);
     }
 
     // Slide
