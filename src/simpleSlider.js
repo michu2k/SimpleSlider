@@ -1,5 +1,5 @@
 /*!
- * SimpleSlider v1.6.3
+ * SimpleSlider v1.7.0
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  *
@@ -11,24 +11,21 @@
 
     'use strict';
 
-    let slider = {};
+    const slider = {};
 
     /**
-     * Core
+     * Constructor
      * @param {string} selector = container, where script will be defined
      * @param {object} userOptions = options defined by user
      */
-    slider.simpleSlider = (selector, userOptions) =>
+    slider.simpleSlider = function(selector, userOptions)
     {
-        let defaults;
-        let v = {};
-
         // Defaults
-        defaults = {
-            speed: 2000, // transition duration in ms {number}
+        const defaults = {
+            speed: 1600, // transition duration in ms {number}
             delay: 6000, // delay between transitions in ms {number}
-            autoplay: true, // slider autoplay {boolean}
-            classes: {
+            autoplay: false, // slider autoplay {boolean}
+            class: {
                 wrapper: 'slider-wrapper', // wrapper class {string}
                 slide: 'slider-slide', // slide class {string}
                 buttons: 'slider-btn', // buttons class {string}
@@ -37,105 +34,115 @@
             }
         };
 
-        // Set options
-        v.options = slider.extendDefaults(defaults, userOptions);
+        // Replace default options with user options
+        this.options = slider.extendDefaults(defaults, userOptions);
+
+        slider.init(selector, this.options);
+    }
+
+    /**
+     * Init slider
+     * @param {string} selector = container, where script will be defined
+     * @param {object} options = slider options
+     */
+    slider.init = function(selector, options)
+    {
+        // Options
+        this.options = options;
+        this.disableEvent = false;
+        this.index = 0;
+        this.autoplayDelay = this.options.delay + this.options.speed;
+        this.transitionDuration = slider.isWebkit('transitionDuration');
+        this.transform = slider.isWebkit('transform');
+        this.timer;
 
         // Elements
-        v.container = document.querySelector(selector);
-        v.wrapper = v.container.querySelector(`.${v.options.classes.wrapper}`);
-        v.buttons = v.container.querySelectorAll(`.${v.options.classes.buttons}`);
-        v.slides = v.container.querySelectorAll(`.${v.options.classes.slide}`);
-        v.pagination = v.container.querySelector(`.${v.options.classes.pagination}`);
+        this.container = document.querySelector(selector);
+        this.wrapper = this.container.querySelector(`.${this.options.class.wrapper}`);
+        this.buttons = this.container.querySelectorAll(`.${this.options.class.buttons}`);
+        this.slides = this.container.querySelectorAll(`.${this.options.class.slide}`);
+        this.pagination = this.container.querySelector(`.${this.options.class.pagination}`);
 
-        // Vars
-        v.disableEvent = false;
-        v.index = 0;
-        v.timer;
-        v.autoplayDelay = v.options.delay + v.options.speed;
-
-        // Call functions
-        slider.createClones(v);
-        slider.setWidth(v);
-        slider.moveWrapper(v);
+        slider.createClones();
+        slider.setWidth();
+        slider.moveWrapper();
 
         // Pagination
-        if (v.pagination) {
-            slider.createPagination(v);
+        if (this.pagination) {
+            slider.createPagination();
         }
 
         // Autoplay
-        if (v.options.autoplay) {
-            slider.autoplay(v);
+        if (this.options.autoplay) {
+            slider.autoplay();
         }
 
         // Buttons
-        if (v.buttons.length == 2) {
-            slider.buttons(v);
+        if (this.buttons.length == 2) {
+            slider.prevBtn();
+            slider.nextBtn();
         }
 
-        // Call functions when window is resized
+        // Events
+        slider.resize();
+        slider.visibilityChange();
+    }
+
+    /**
+     * Calculate the slider when changing the window size
+     */
+    slider.resize = function() 
+    {
         window.addEventListener('resize', () => {
-            slider.setWidth(v);
-            slider.moveWrapper(v);
-            slider.setTransition(0, v.wrapper);
+            slider.setWidth();
+            slider.moveWrapper();
+            slider.setTransition(0);
         });
     }
 
     /**
-     * Move slider main function
-     * @param {object} vars = list of variables
-     * @param {string} direction = move direction [left, right]
-     */ 
-    slider.moveSlider = (vars, direction = 'right') =>
-    { 
-        // Change index value depending on the direction
-        direction == 'left' ? vars.index-- : vars.index++;
+     * Play/Stop autoplay when tab is active/inactive
+     */
+    slider.visibilityChange = function() 
+    {
+        // Old browsers support
+        let hidden, visibilityChange;
 
-        // Disable events
-        slider.disableEvents(vars);
-
-        // Highlight bullet
-        if (vars.pagination) {
-            slider.highlightBullet(vars);
+        if (typeof document.hidden !== 'undefined') {
+            hidden = 'hidden';
+            visibilityChange = 'visibilitychange';
+        } else {
+            hidden = 'webkitHidden';
+            visibilityChange = 'webkitvisibilitychange';
         }
 
-        // Set transition duration
-        slider.setTransition(vars.options.speed, vars.wrapper);
-
-        // Switch from the cloned slide to the proper slide
-        if (vars.index < 0 || vars.index >= vars.slides.length) {   
-            setTimeout(() => {
-                // Set transition duration
-                slider.setTransition(0, vars.wrapper);
-
-                // Update index
-                vars.index = slider.updateIndex(vars.index, vars.slides.length); 
-
-                // Move wrapper
-                slider.moveWrapper(vars);
-            }, vars.options.speed);
-        }
-
-        // Move wrapper
-        slider.moveWrapper(vars);
+        window.addEventListener(visibilityChange, () => {
+            if (this.options.autoplay) {
+                if (!document[hidden]) {
+                    slider.resetAutoplay();
+                    slider.autoplay();
+                } else {
+                    slider.resetAutoplay();
+                }
+            }
+        });     
     }
 
     /**
      * Create slider pagination
-     * @param {object} vars = list of variables
      */ 
-    slider.createPagination = (vars) =>
+    slider.createPagination = function()
     {
         let bullet;
         let fragment = document.createDocumentFragment();
 
         // Create bullets
-        for (let i = 0; i < vars.slides.length; i++)
+        for (let i = 0; i < this.slides.length; i++)
         {
             bullet = document.createElement('span');
-            bullet.classList.add(vars.options.classes.paginationItem); 
+            bullet.classList.add(this.options.class.paginationItem); 
 
-            // Add active class to first bullet
+            // Add active class to the first bullet
             if (i == 0) {
                 bullet.classList.add('active');
             }
@@ -144,234 +151,258 @@
         }
 
         // Append bullets to the DOM
-        vars.pagination.appendChild(fragment);
+        this.pagination.appendChild(fragment);
 
         // Bullets action
-        slider.bullets(vars);
+        slider.bullets();
     }
 
     /**
      * Move slide when clicked on pagination bullet
-     * @param {object} vars = list of variables
      */
-    slider.bullets = (vars) =>
+    slider.bullets = function()
     {
-        let bullets = vars.pagination.querySelectorAll(`.${vars.options.classes.paginationItem}`);
+        let bullets = this.pagination.querySelectorAll(`.${this.options.class.paginationItem}`);
 
         for (let i = 0; i < bullets.length; i++)
         {
             bullets[i].addEventListener('click', () => {
 
-                if (!vars.disableEvent) { 
-
-                    vars.index = i - 1;
-                    slider.moveSlider(vars);
-
-                    // Reset autoplay
-                    if (vars.options.autoplay) {
-                        slider.resetAutoplay(vars);
-                    }
+                if (!this.disableEvent) {
+                    this.index = i - 1;
                 }
+
+                slider.buttonsAction();
             });
         }
     }
 
     /**
      * Highlight active bullet
-     * @param {object} vars = list of variables
      */
-    slider.highlightBullet = (vars) =>
+    slider.highlightBullet = function()
     {
-        let bullets = vars.pagination.querySelectorAll(`.${vars.options.classes.paginationItem}`);
-        let index = slider.updateIndex(vars.index, vars.slides.length);
-
-        // Remove active class
-        for (let i = 0; i < bullets.length; i++)
-        {
-            if (bullets[i].classList.contains('active')) {
-                bullets[i].classList.remove('active');
-            }
-        }
+        // Remove active class from bullet
+        let activeBullet = this.pagination.querySelector('.active');
+        activeBullet.classList.remove('active');
 
         // Add class to active bullet
+        let bullets = this.pagination.querySelectorAll(`.${this.options.class.paginationItem}`);
+        let index = slider.updateIndex(this.index);
         bullets[index].classList.add('active');
     }
 
     /**
-     * Move slide when clicked on button
-     * @param {object} vars = list of variables
+     * Previous button
      */
-    slider.buttons = (vars) =>
+    slider.prevBtn = function() {
+        this.buttons[0].addEventListener('click', () => {
+            slider.buttonsAction('left');
+        });
+    }
+
+    /**
+     * Next button
+     */
+    slider.nextBtn = function() {
+        this.buttons[1].addEventListener('click', () => {
+            slider.buttonsAction();
+        });
+    }    
+
+    /**
+     * Call actions on click the navigation element
+     * @param {string} direction = slider move direction [left, right]
+     */
+    slider.buttonsAction = function(direction = 'right')
     {
-        let direction = ['left', 'right'];
+        if (!this.disableEvent) {
+            slider.moveSlider(direction);
 
-        for (let i = 0; i < vars.buttons.length; i++)
-        {
-            vars.buttons[i].addEventListener('click', () => {
-
-                if (!vars.disableEvent) {
-                    slider.moveSlider(vars, direction[i]);
-
-                    // Reset autoplay
-                    if (vars.options.autoplay) {
-                        slider.resetAutoplay(vars);
-                    }
-                }
-            });
+            // Reset autoplay
+            if (this.options.autoplay) {
+                slider.resetAutoplay();
+                slider.autoplay();
+            }
         }
     }
     
     /**
      * Disable events during slider animation
-     * @param {object} vars = list of variables
      */
-    slider.disableEvents = (vars) =>
+    slider.disableEvents = function()
     {
-        vars.disableEvent = true;
+        this.disableEvent = true;
 
         // Enable Events
         setTimeout(() => {
-            vars.disableEvent = false;
-        }, vars.options.speed);
+            this.disableEvent = false;
+        }, this.options.speed);
     }
 
     /** 
      * Slider autoplay 
-     * @param {object} vars = list of variables
      */
-    slider.autoplay = (vars) =>
+    slider.autoplay = function()
     {
-        vars.timer = setTimeout(() => {
-            slider.moveSlider(vars);
-            slider.autoplay(vars);
-        }, vars.autoplayDelay);
+        this.timer = setTimeout(() => {
+            slider.moveSlider();
+            slider.autoplay();
+        }, this.autoplayDelay);
     }
 
     /**
      * Reset slider autoplay
-     * @param {object} vars = list of variables
      */
-    slider.resetAutoplay = (vars) =>
+    slider.resetAutoplay = function()
     {
-        clearTimeout(vars.timer);
-        slider.autoplay(vars);
+        clearTimeout(this.timer);
     }
  
+    /**
+     * Move slider main function
+     * @param {string} direction = move direction [left, right]
+     */ 
+    slider.moveSlider = function(direction = 'right')
+    {
+        // Change index value depending on the direction
+        direction == 'right' ? this.index++ : this.index--;
+
+        slider.disableEvents();
+
+        // Highlight bullet
+        if (this.pagination) {
+            slider.highlightBullet();
+        }
+
+        // Set transition duration
+        slider.setTransition(this.options.speed);
+
+        // Switch from the cloned slide to the proper slide
+        if (this.index < 0 || this.index >= this.slides.length) {
+            setTimeout(() => {
+
+                // Update index
+                this.index = slider.updateIndex(this.index); 
+
+                slider.setTransition(0);
+                slider.moveWrapper();
+
+            }, this.options.speed);
+        }
+
+        slider.moveWrapper();
+    }
+
     /** 
      * Set transition duration
      * @param {number} speed = speed value in miliseconds
-     * @param {object} wrapper = wrapper element
      */
-    slider.setTransition = (speed, wrapper) =>
+    slider.setTransition = function(speed)
     {
-        let transition = slider.getSupportedProperty('TransitionDuration');
-        wrapper.style[transition] = speed + 'ms';
+        this.wrapper.style[this.transitionDuration] = speed + 'ms';
     }
 
     /**
      * Change wrapper position by a certain number of pixels
-     * @param {object} vars = list of variables
      */
-    slider.moveWrapper = (vars) =>
+    slider.moveWrapper = function()
     {
         let pixels = 0;
-        let slides = vars.container.querySelectorAll(`.${vars.options.classes.slide}`);
+        let slides = this.container.querySelectorAll(`.${this.options.class.slide}`);
 
-        for(let i = 0; i <= vars.index; i++)
+        for(let i = 0; i <= this.index; i++)
         {
             pixels += slides[i].offsetWidth;
         }
 
-        let transform = slider.getSupportedProperty('Transform');
-        vars.wrapper.style[transform] = `translate3d( -${pixels}px, 0, 0)`;
+        this.wrapper.style[this.transform] = `translate3d(-${pixels}px, 0, 0)`;
     }
 
     /**
      * Set wrapper and slides width
-     * @param {object} vars = list of variables
      */
-    slider.setWidth = (vars) =>
+    slider.setWidth = function()
     {
         let wrapperWidth = 0;
-        let slides = vars.container.querySelectorAll(`.${vars.options.classes.slide}`);
+        let slides = this.container.querySelectorAll(`.${this.options.class.slide}`);
 
         for(let i = 0; i < slides.length; i++)
         {
             // Slide width
-            slides[i].style.width = vars.container.offsetWidth + 'px';
+            slides[i].style.width = this.container.offsetWidth + 'px';
 
             // Wrapper width
             wrapperWidth += slides[i].offsetWidth;
         } 
 
-        vars.wrapper.style.width = wrapperWidth + 'px';     
+        this.wrapper.style.width = wrapperWidth + 'px';     
     }
 
     /**
      * Clone first and last slide and append them to the DOM
-     * @param {object} vars = list of variables
      */     
-    slider.createClones = (vars) =>
+    slider.createClones = function()
     {
-        let firstElement = vars.wrapper.firstElementChild.cloneNode(true);
-        let lastElement = vars.wrapper.lastElementChild.cloneNode(true);
+        let firstElement = this.wrapper.firstElementChild.cloneNode(true);
+        let lastElement = this.wrapper.lastElementChild.cloneNode(true);
 
-        vars.wrapper.appendChild(firstElement);
-        vars.wrapper.insertBefore(lastElement, vars.slides[0]);
+        this.wrapper.appendChild(firstElement);
+        this.wrapper.insertBefore(lastElement, this.slides[0]);
     }
 
     /**
      * Update index
      * @param {number} index = index value
-     * @param {number} slides = number of slides
      * @return {number} index = index value after correction
      */
-    slider.updateIndex = (index, slides) =>
+    slider.updateIndex = function(index)
     {
-        if (index >= slides) {
+        if (index >= this.slides.length) {
             index = 0;
         }
 
         if (index < 0) {
-            index = slides - 1;
+            index = this.slides.length - 1;
         }
 
         return index;
     }
 
     /**
-     * Get supported property and add prefix if needed
+     * Get supported property and add webkit prefix if needed
      * @param {string} property = property name
-     * @return {string} propertyWithPrefix = property prefix
+     * @return {string} property = property with optional webkit prefix
      */
-    slider.getSupportedProperty = (property) =>
+    slider.isWebkit = function(property)
     {
-        let prefix = ['-', 'webkit', 'ms', 'o'];
-        let propertyWithPrefix;
-
-        for (let i = 0; i < prefix.length; i++) 
-        {
-            if (prefix[i] == '-') {
-                propertyWithPrefix = property.toLowerCase();
-            } else {
-                propertyWithPrefix = prefix[i] + property;
-            }
-
-            if (typeof document.body.style[propertyWithPrefix] != 'undefined') {
-               return propertyWithPrefix;
-            }
+        if (typeof document.documentElement.style[property] === 'string') {
+            return property;
         }
 
-        return null;
+        property = slider.capitalizeFirstLetter(property);
+        property = `webkit${property}`;
+
+        return property;
+    }
+
+    /**
+     * Capitalize the first letter in the string
+     * @param {string} string = string
+     * @return {string} string = changed string
+     */
+    slider.capitalizeFirstLetter = function(string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     /**
      * Extend defaults deep
      * @param {object} defaults = defaults options defined in script
-     * @param {object} properties = new options
+     * @param {object} properties = user options
      * @return {object} defaults = modified options
      */
-    slider.extendDefaults = (defaults, properties) =>
+    slider.extendDefaults = function(defaults, properties)
     {
         let property;
         let propertyDeep;

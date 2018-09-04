@@ -2,13 +2,19 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-1.6.3
+1.7.0
 
 ## Installation
 
 ###### npm
 ```
 npm install simpleslider-js
+```
+
+###### CDN
+```
+https://unpkg.com/simpleslider-js@1.7.0/dist/simpleSlider.min.js
+https://unpkg.com/simpleslider-js@1.7.0/dist/simpleSlider.min.css
 ```
 
 ###### Github
@@ -76,9 +82,9 @@ You can initialize more than one slider per page.
 
     // User options
     var slider = new simpleSlider('.simple-slider-second', {
-        speed: 2000, //default
-        autoplay: true, //default
-        classes: {
+        speed: 1600, //default
+        autoplay: false, //default
+        class: {
             wrapper: 'slider-wrapper' //default
         }
     });
@@ -89,11 +95,11 @@ You can initialize more than one slider per page.
 
 | Option  | Type | Default value | Description |
 | ----- | ----- | ----- | ----- |
-| speed | number | 2000 | Transition duration in ms |
-| delay | number | 6000 | Delay between transitions in ms |
-| autoplay | boolean | true | slider autoplay |
-| classes: wrapper | string | 'slider-wrapper' | Wrapper class |
-| classes: slide | string | 'slider-slide' | Slide class |
-| classes: buttons | string | 'slider-btn' | Buttons class |
-| classes: pagination | string | 'slider-pagination' | Pagination class |
-| classes: paginationItem | string | 'pagination-bullet' | pagination bullet class |
+| speed | number | 1600 | Transition duration in ms |
+| delay | number | 6000 | Delay between transitions in ms (autoplay)|
+| autoplay | boolean | false | slider autoplay |
+| class:wrapper | string | 'slider-wrapper' | Wrapper class |
+| class:slide | string | 'slider-slide' | Slide class |
+| class:buttons | string | 'slider-btn' | Buttons class |
+| class:pagination | string | 'slider-pagination' | Pagination class |
+| class:paginationItem | string | 'pagination-bullet' | Pagination bullet class |
