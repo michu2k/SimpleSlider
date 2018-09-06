@@ -1,5 +1,5 @@
 /*!
- * SimpleSlider v1.7.1
+ * SimpleSlider v1.7.2
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  *
@@ -14,15 +14,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     'use strict';
 
+    /**
+     * Core
+     * @param {string} selector = container, where script will be defined
+     * @param {object} userOptions = options defined by user
+     */
+
     var simpleSlider = function simpleSlider(selector, userOptions) {
         var slider = {};
 
         /**
          * Init slider
-         * @param {string} selector = container, where script will be defined
-         * @param {object} userOptions = options defined by user
          */
-        slider.init = function (selector, userOptions) {
+        slider.init = function () {
             // Defaults
             var defaults = {
                 speed: 1600, // transition duration in ms {number}
@@ -410,7 +414,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return defaults;
         };
 
-        slider.init(selector, userOptions);
+        slider.init();
     };
 
     window.simpleSlider = simpleSlider;
