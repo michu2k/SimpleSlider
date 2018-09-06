@@ -15,7 +15,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     'use strict';
 
     var simpleSlider = function simpleSlider(selector, userOptions) {
-
         var slider = {};
 
         /**

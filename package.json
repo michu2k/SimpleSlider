@@ -11,7 +11,9 @@
     "slider",
     "javascript",
     "simple",
-    "carousel"
+    "carousel",
+    "simpleslider",
+    "slideshow"
   ],
   "author": "Michał Strumpf",
   "homepage": "https://github.com/michu2k/SimpleSlider#readme",

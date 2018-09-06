@@ -11,8 +11,8 @@
 
     'use strict';
 
-    const simpleSlider = function(selector, userOptions) {
-
+    const simpleSlider = function(selector, userOptions)
+    {
         const slider = {};
 
         /**
@@ -186,7 +186,8 @@
         /**
          * Previous button
          */
-        slider.prevBtn = function() {
+        slider.prevBtn = function()
+        {
             this.buttons[0].addEventListener('click', () => {
                 slider.buttonsAction('left');
             });
@@ -195,7 +196,8 @@
         /**
          * Next button
          */
-        slider.nextBtn = function() {
+        slider.nextBtn = function()
+        {
             this.buttons[1].addEventListener('click', () => {
                 slider.buttonsAction();
             });
