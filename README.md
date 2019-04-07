@@ -2,7 +2,7 @@
 Simple responsive slider created in pure javascript.
 
 ## Version
-1.7.2
+1.8.0
 
 ## Installation
 
@@ -13,8 +13,8 @@ npm install simpleslider-js
 
 ###### CDN
 ```
-https://unpkg.com/simpleslider-js@1.7.2/dist/simpleSlider.min.js
-https://unpkg.com/simpleslider-js@1.7.2/dist/simpleSlider.min.css
+https://unpkg.com/simpleslider-js@1.8.0/dist/simpleSlider.min.js
+https://unpkg.com/simpleslider-js@1.8.0/dist/simpleSlider.min.css
 ```
 
 ###### Github

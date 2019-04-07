@@ -19,7 +19,6 @@
                     <span class="heading">Hello</span>
                     <hr class="line">
                     <p class="desc">This is a demo page for simpleSlider script. Go to the Github page to see more details.</p>
-                    <p class="desc">The newest version: <b>1.7.2</b></p>
                     <a href="https://github.com/michu2k/SimpleSlider" class="link">Github Page</a>
                 </div>
             </div>
@@ -44,8 +43,9 @@
                     <p class="desc">You can download files from Github or install through NPM:</p>
                     <p class="desc desc-bg">npm install simpleslider-js</p>
                     <p class="desc">or If you prefer files from CDN:</p>
-                    <p class="desc desc-bg">https://unpkg.com/simpleslider-js/dist/simpleSlider.min.js</p>
-                    <p class="desc desc-bg">https://unpkg.com/simpleslider-js/dist/simpleSlider.min.css</p>
+                    <p class="desc">Remember to replace the VER with the script version.</p>
+                    <p class="desc desc-bg">https://unpkg.com/simpleslider-js@VER/dist/simpleSlider.min.js</p>
+                    <p class="desc desc-bg">https://unpkg.com/simpleslider-js@VER/dist/simpleSlider.min.css</p>
                 </div>
             </div>
         </div>
@@ -59,9 +59,15 @@
     <div class="slider-btn slider-btn-next"></div>
 </div>
 
-<script src="../dist/simpleSlider.min.js"></script>
+<script src="../dist/simpleSlider.js"></script>
 <script>
-    var slider = new simpleSlider('.simple-slider-first');
+    var slider = new simpleSlider('.simple-slider-first', {
+        autoplay: true,
+        siema:' ta',
+        class: {
+            siema2: '.gg'
+        }
+    });
 </script>
 
 </body>
