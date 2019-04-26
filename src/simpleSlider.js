@@ -26,7 +26,7 @@
             setUserOptions() {
                 // Defaults
                 const defaults = {
-                    speed: 1600, // transition duration in ms {number}
+                    speed: 1000, // transition duration in ms {number}
                     delay: 6000, // delay between transitions in ms {number}
                     slidesPerView: 1,
                     autoplay: false, // slider autoplay {boolean}
@@ -51,7 +51,7 @@
              * Set additional slider options
              */
             setSliderOptions() {
-                // Get options
+                // Get user options
                 const {delay, speed, class: {wrapper, slide, buttons, pagination}} = this.options;
 
                 // Elements
@@ -62,153 +62,228 @@
                 this.pagination = this.container.querySelector(`.${pagination}`);
 
                 // Options
-                this.disableEvent = false;
-                this.index = 0;
+                this.disableEvents = false;
+                this.index = 1;
+                this.wrapperWidth = 0;
                 this.autoplayDelay = delay + speed;
                 this.transitionDuration = this.isWebkit('transitionDuration');
                 this.transform = this.isWebkit('transform');
                 this.timer;
+
+                // Drag values
+                this.drag = {
+                    startX: 0,
+                    endX: 0,
+                    dragDiff: 0,
+                    maxMovement: 0,
+                    focused: false
+                }
             },
 
             /**
              * Init slider
              */
             init() {
-
                 // Set options
                 this.setUserOptions();
                 this.setSliderOptions();
 
-                // Call functions
+                // Create slides and set wrapper
                 this.createClones();
                 this.setWidth();
                 this.moveWrapper();
-
-                const {autoplay} = this.options;
     
                 // Pagination
-                if (this.pagination) {
-                    this.createPagination();
-                }
+                this.createPagination();
     
                 // Autoplay
-                if (autoplay) {
-                    this.autoplay();
-                }
+                this.autoplay();
     
                 // Buttons
                 if (this.buttons.length == 2) {
                     this.prevBtn();
                     this.nextBtn();
                 }
+
+                // Handlers
+                this.attachEvents();
+
+                this.resizeHandler();
+                this.visibilityChangeHandler();
+            },
+
+            /**
+             * Attach events
+             */
+            attachEvents() {
+                this.container.addEventListener('touchstart', this.touchstartHandler.bind(this));
+                this.container.addEventListener('touchmove', this.touchmoveHandler.bind(this));
+                this.container.addEventListener('touchend', this.touchendHandler.bind(this));
+            },
+
+            /**
+             * Touchstart event
+             */
+            touchstartHandler(e) {
+                e.stopPropagation();
+
+                this.setTransition(0);
+                //this.drag.maxMovement = (this.wrapperWidth / this.allSlides.length) + 50;
+                this.drag.startX = e.touches[0].pageX;
+                this.drag.focused = true;
+
+                setTimeout(() => {
+                    this.drag.focused = false;
+                }, 100);
+            },
+
+            /**
+             * Touchmove event
+             */
+            touchmoveHandler(e) {
+                e.stopPropagation();
+
+                this.drag.endX = e.touches[0].pageX;
+                this.drag.dragDiff = this.drag.endX - this.drag.startX;
+                this.wrapper.style[this.transform] = `translate3d(-${this.wrapperPosition - this.drag.dragDiff}px, 0, 0)`;
+            },
     
-                // Events
-                this.resize();
-                this.visibilityChange();
+            /**
+             * Touchend event
+             */
+            touchendHandler(e) {
+                e.stopPropagation();
+
+                // Autoplay
+                //this.autoplay();
+
+                if (Math.abs(this.drag.dragDiff) > 50 && !this.drag.focused) {
+                    if (this.drag.dragDiff < -50) {
+                        this.changeSlide('right');
+                    } else if (this.drag.dragDiff > 50) {
+                        this.changeSlide();
+                    }
+                }
+
+                // Reset move
+                this.setTransition(200);
+                this.moveWrapper();
+
+                this.drag.dragDiff = 0;
             },
 
             /**
              * Clone slides and append them to the DOM
              */
             createClones() {
-                const {slidesPerView} = this.options;
+                const {slidesPerView, class: {slide}} = this.options;
                 const wrapper = this.wrapper;
                 const slidesLength = this.slides.length - 1;
                 const clonesAtFront = document.createDocumentFragment();
                 const clonesAtBack = document.createDocumentFragment();
-                let slide;
+                let cloned;
 
                 for (let i = 0; i < slidesPerView; i++) {
+                    if (slidesLength - i < 0 || i > slidesLength)  break;
+
                     // Copy the slides from the end
-                    slide = wrapper.children[slidesLength - i].cloneNode(true);
-                    clonesAtBack.insertBefore(slide, clonesAtBack.childNodes[0]);
+                    cloned = wrapper.children[slidesLength - i].cloneNode(true);
+                    clonesAtBack.insertBefore(cloned, clonesAtBack.childNodes[0]);
 
                     // Copy the slides from the beginning
-                    slide = wrapper.children[i].cloneNode(true);
-                    clonesAtFront.appendChild(slide);
+                    cloned = wrapper.children[i].cloneNode(true);
+                    clonesAtFront.appendChild(cloned);
                 }
 
                 // Append slides to the DOM
                 wrapper.appendChild(clonesAtFront);
                 wrapper.insertBefore(clonesAtBack, this.slides[0]);
+                
+                this.allSlides = this.container.querySelectorAll(`.${slide}`);
             },
 
             /**
              * Set wrapper and slides width
              */
             setWidth() {
-                const {slidesPerView, class: {slide}} = this.options;
-                const slides = this.container.querySelectorAll(`.${slide}`);
+                const {slidesPerView} = this.options;
                 const slideWidth = Math.round(this.container.offsetWidth / slidesPerView) + 'px';
-                let wrapperWidth = 0;
+                this.wrapperWidth = 0;
 
-                Object.values(slides).map((slide) => {
+                Object.values(this.allSlides).map((slide) => {
                     // Slide width
                     slide.style.width = slideWidth;
 
                     // Wrapper width
-                    wrapperWidth += slide.offsetWidth;
+                    this.wrapperWidth += slide.offsetWidth;
                 });
                 
-                this.wrapper.style.width = wrapperWidth + 'px';     
+                this.wrapper.style.width = this.wrapperWidth + 'px';     
             },
             
             /**
              * Change wrapper position by a certain number of pixels
              */
             moveWrapper() {
-                const {slidesPerView,class: {slide}} = this.options;
-                const slides = this.container.querySelectorAll(`.${slide}`);
-                let activeSlide = Math.round(slidesPerView / 2) + this.index;
-                let pixels = 0;
+                const {slidesPerView} = this.options;
+                let activeSlide = Math.floor(slidesPerView / 2) + this.index;
+                this.wrapperPosition = 0;
 
-                // If slides per view is even, move one to the left
-                if (slidesPerView % 2 == 0 ) {
+                if (slidesPerView % 2 == 0) {
                     activeSlide++;
                 }
 
                 for (let i = 0; i < activeSlide; i++) {
-                    pixels += slides[i].offsetWidth;
+                    this.wrapperPosition += this.allSlides[i].offsetWidth;
                 }
 
-                this.wrapper.style[this.transform] = `translate3d(-${pixels}px, 0, 0)`;
+                // Set wrapper position
+                this.wrapper.style[this.transform] = `translate3d(-${this.wrapperPosition}px, 0, 0)`;
             },
-     
+
             /**
              * Move slider main function
              * @param {string} direction = move direction [left, right]
-             */ 
-            moveSlider(direction) {
+             */
+            changeSlide(direction) {
                 const {speed} = this.options;
 
                 // Change index value depending on the direction
                 direction == 'right' ? this.index++ : this.index--;
     
                 // Disable events
-                this.disableEvents();
-    
+                this.disableAllEvents();
+
                 // Highlight bullet
-                if (this.pagination) {
-                    this.highlightBullet();
-                }
+                this.highlightBullet();
     
-                // Set transition duration
                 this.setTransition(speed);
-    
-                // Switch from the cloned slide to the proper slide
-                if (this.index < 0 || this.index >= this.slides.length) {
-                    setTimeout(() => {
-                        // Update index
-                        this.index = this.updateIndex(this.index); 
-    
-                        this.setTransition(0);
-                        this.moveWrapper();
-                    }, speed);
-                }
-    
                 this.moveWrapper();
+
+                setTimeout(() => {
+                    // Switch from the cloned slide to the proper slide
+                    if (this.index <= 0 || this.index > this.slides.length) {
+                        this.index = this.updateIndex(this.index);
+                        this.moveWrapper();
+                        this.setTransition(0);
+                    }
+                }, speed);
             },
-    
+
+            /**
+             * Disable events during slider animation
+             */
+            disableAllEvents() {
+                const {speed} = this.options;
+
+                this.disableEvents = true;
+                
+                // Enable Events
+                setTimeout(() => {
+                    this.disableEvents = false;
+                }, speed);
+            },
+
             /** 
              * Set transition duration
              * @param {number} speed = speed value in miliseconds
@@ -221,6 +296,8 @@
              * Create slider pagination
              */ 
             createPagination() {
+                if (!this.pagination) return;
+
                 const {class: {paginationItem}} = this.options;
                 const fragment = document.createDocumentFragment();
                 const slidesLength = this.slides.length;
@@ -255,9 +332,8 @@
 
                 Object.values(bullets).map((bullet, index) => {
                     bullet.addEventListener('click', () => {
-    
-                        if (!this.disableEvent) {
-                            this.index = index - 1;
+                        if (!this.disableEvents) {
+                            this.index = index;
                         }
     
                         this.buttonsAction('right');
@@ -266,27 +342,11 @@
             },
 
             /**
-             * Call actions on click the navigation element
-             * @param {string} direction = slider move direction [left, right]
-             */
-            buttonsAction(direction) {
-                const {autoplay} = this.options;
-
-                if (!this.disableEvent) {
-                    this.moveSlider(direction);
-
-                    // Reset autoplay
-                    if (autoplay) {
-                        this.resetAutoplay();
-                        this.autoplay();
-                    }
-                }
-            },
-
-            /**
              * Highlight active bullet
              */
             highlightBullet() {
+                if (!this.pagination) return;
+
                 const {class: {paginationItem}} = this.options;
 
                 // Remove active class from bullet
@@ -296,7 +356,21 @@
                 // Add class to active bullet
                 let bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
                 let index = this.updateIndex(this.index);
-                bullets[index].classList.add('active');
+                bullets[index - 1].classList.add('active');
+            },
+
+            /**
+             * Call actions on click the navigation element
+             * @param {string} direction = slider move direction [left, right]
+             */
+            buttonsAction(direction) {
+                if (!this.disableEvents) {
+                    this.changeSlide(direction);
+
+                    // Reset autoplay
+                    this.resetAutoplay();
+                    this.autoplay();
+                }
             },
 
             /**
@@ -323,38 +397,29 @@
              * @return {number} index = index value after correction
              */
             updateIndex(index) {
-                if (index >= this.slides.length) {
-                    index = 0;
+                if (index > this.slides.length) {
+                    index = 1;
                 }
     
-                if (index < 0) {
-                    index = this.slides.length - 1;
+                if (index <= 0) {
+                    index = this.slides.length;
                 }
     
                 return index;
-            },
-        
-            /**
-             * Disable events during slider animation
-             */
-            disableEvents() {
-                const {speed} = this.options;
-                this.disableEvent = true;
-    
-                // Enable Events
-                setTimeout(() => {
-                    this.disableEvent = false;
-                }, speed);
             },
 
             /** 
              * Slider autoplay
              */
             autoplay() {
-                this.timer = setTimeout(() => {
-                    this.moveSlider('right');
-                    this.autoplay();
-                }, this.autoplayDelay);
+                const {autoplay} = this.options;
+                
+                if (autoplay) {
+                    this.timer = setTimeout(() => {
+                        this.changeSlide('right');
+                        this.autoplay();
+                    }, this.autoplayDelay);
+                }
             },
 
             /**
@@ -367,10 +432,7 @@
             /**
              * Play/Stop autoplay when tab is active/inactive
              */
-            visibilityChange() {
-                const {autoplay} = this.options;
-
-                // Old browsers support
+            visibilityChangeHandler() {
                 let hidden, visibilityChange;
     
                 if (typeof document.hidden !== 'undefined') {
@@ -382,13 +444,11 @@
                 }
     
                 window.addEventListener(visibilityChange, () => {
-                    if (autoplay) {
-                        if (!document[hidden]) {
-                            this.resetAutoplay();
-                            this.autoplay();
-                        } else {
-                            this.resetAutoplay();
-                        }
+                    if (!document[hidden]) {
+                        this.resetAutoplay();
+                        this.autoplay();
+                    } else {
+                        this.resetAutoplay();
                     }
                 });
             },
@@ -396,7 +456,7 @@
             /**
              * Calculate the slider when changing the window size
              */
-            resize() {
+            resizeHandler() {
                 window.addEventListener('resize', () => {
                     this.setWidth();
                     this.moveWrapper();
@@ -428,7 +488,6 @@
             capitalizeFirstLetter(string) {
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
-        
         };
 
         slider.init();
