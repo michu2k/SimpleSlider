@@ -24,9 +24,10 @@
       setUserOptions: function setUserOptions() {
         // Defaults
         var defaults = {
-          speed: 1000, // transition duration in ms {number}
+          speed: 800, // transition duration in ms {number}
           delay: 6000, // delay between transitions in ms {number}
-          slidesPerView: 1,
+          slidesPerView: 1, // number of slides per view {number}
+          enableDrag: true, // enable drag option {boolean}
           autoplay: false, // slider autoplay {boolean}
           class: {
             wrapper: 'slider-wrapper', // wrapper class {string}
@@ -46,7 +47,7 @@
       },
 
       /**
-       * Set additional slider options
+       * Set slider options
        */
       setSliderOptions: function setSliderOptions() {
         // Get user options
@@ -59,7 +60,7 @@
           buttons = _this$options$class.buttons,
           pagination = _this$options$class.pagination;
 
-        // Elements
+        // DOM elements
         this.container = document.querySelector(selector);
         this.wrapper = this.container.querySelector('.'.concat(wrapper));
         this.slides = this.container.querySelectorAll('.'.concat(slide));
@@ -80,8 +81,9 @@
           startX: 0,
           endX: 0,
           dragDiff: 0,
-          maxMovement: 0,
-          focused: false
+          maxOffset: 0,
+          focused: false,
+          isLink: false
         };
       },
 
@@ -112,73 +114,30 @@
 
         // Handlers
         this.attachEvents();
-
-        this.resizeHandler();
-        this.visibilityChangeHandler();
       },
 
       /**
        * Attach events
        */
       attachEvents: function attachEvents() {
-        this.container.addEventListener('touchstart', this.touchstartHandler.bind(this));
-        this.container.addEventListener('touchmove', this.touchmoveHandler.bind(this));
-        this.container.addEventListener('touchend', this.touchendHandler.bind(this));
-      },
+        var enableDrag = this.options.enableDrag;
 
-      /**
-       * Touchstart event
-       */
-      touchstartHandler: function touchstartHandler(e) {
-        var _this = this;
-        e.stopPropagation();
+        if (enableDrag) {
+          // Touch
+          this.container.addEventListener('touchstart', this.touchstartHandler.bind(this));
+          this.container.addEventListener('touchmove', this.touchmoveHandler.bind(this));
+          this.container.addEventListener('touchend', this.touchendHandler.bind(this));
 
-        this.setTransition(0);
-        //this.drag.maxMovement = (this.wrapperWidth / this.allSlides.length) + 50;
-        this.drag.startX = e.touches[0].pageX;
-        this.drag.focused = true;
-
-        setTimeout(function() {
-          _this.drag.focused = false;
-        }, 100);
-      },
-
-      /**
-       * Touchmove event
-       */
-      touchmoveHandler: function touchmoveHandler(e) {
-        e.stopPropagation();
-
-        this.drag.endX = e.touches[0].pageX;
-        this.drag.dragDiff = this.drag.endX - this.drag.startX;
-        this.wrapper.style[this.transform] = 'translate3d(-'.concat(
-          this.wrapperPosition - this.drag.dragDiff,
-          'px, 0, 0)'
-        );
-      },
-
-      /**
-       * Touchend event
-       */
-      touchendHandler: function touchendHandler(e) {
-        e.stopPropagation();
-
-        // Autoplay
-        //this.autoplay();
-
-        if (Math.abs(this.drag.dragDiff) > 50 && !this.drag.focused) {
-          if (this.drag.dragDiff < -50) {
-            this.changeSlide('right');
-          } else if (this.drag.dragDiff > 50) {
-            this.changeSlide();
-          }
+          // Mouse
+          this.container.addEventListener('click', this.clickHandler.bind(this));
+          this.container.addEventListener('mousedown', this.mousedownHandler.bind(this));
+          this.container.addEventListener('mousemove', this.mousemoveHandler.bind(this));
+          this.container.addEventListener('mouseup', this.mouseupHandler.bind(this));
         }
 
-        // Reset move
-        this.setTransition(200);
-        this.moveWrapper();
-
-        this.drag.dragDiff = 0;
+        // Window
+        window.addEventListener('resize', this.resizeHandler.bind(this));
+        this.visibilityChangeHandler();
       },
 
       /**
@@ -217,17 +176,23 @@
        * Set wrapper and slides width
        */
       setWidth: function setWidth() {
-        var _this2 = this;
+        var _this = this;
         var slidesPerView = this.options.slidesPerView;
         var slideWidth = Math.round(this.container.offsetWidth / slidesPerView) + 'px';
         this.wrapperWidth = 0;
+        this.drag.maxOffset = 100;
 
-        Object.values(this.allSlides).map(function(slide) {
+        Object.values(this.allSlides).map(function(slide, index) {
           // Slide width
           slide.style.width = slideWidth;
 
           // Wrapper width
-          _this2.wrapperWidth += slide.offsetWidth;
+          _this.wrapperWidth += slide.offsetWidth;
+
+          // Maximum drag offset
+          if (index + slidesPerView < _this.allSlides.length) {
+            _this.drag.maxOffset += slide.offsetWidth;
+          }
         });
 
         this.wrapper.style.width = this.wrapperWidth + 'px';
@@ -241,10 +206,6 @@
         var activeSlide = Math.floor(slidesPerView / 2) + this.index;
         this.wrapperPosition = 0;
 
-        if (slidesPerView % 2 == 0) {
-          activeSlide++;
-        }
-
         for (var i = 0; i < activeSlide; i++) {
           this.wrapperPosition += this.allSlides[i].offsetWidth;
         }
@@ -254,48 +215,46 @@
       },
 
       /**
-       * Move slider main function
+       * Change the slide
        * @param {string} direction = move direction [left, right]
+       * @param {boolean} isAutoplay = check if the function is called by autoplay
        */
       changeSlide: function changeSlide(direction) {
-        var _this3 = this;
+        var _this2 = this;
+        var isAutoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
         var speed = this.options.speed;
 
-        // Change index value depending on the direction
-        direction == 'right' ? this.index++ : this.index--;
-
-        // Disable events
-        this.disableAllEvents();
-
-        // Highlight bullet
-        this.highlightBullet();
-
-        this.setTransition(speed);
-        this.moveWrapper();
-
-        setTimeout(function() {
-          // Switch from the cloned slide to the proper slide
-          if (_this3.index <= 0 || _this3.index > _this3.slides.length) {
-            _this3.index = _this3.updateIndex(_this3.index);
-            _this3.moveWrapper();
-            _this3.setTransition(0);
+        if (!this.disableEvents) {
+          // Reset autoplay
+          if (!isAutoplay) {
+            this.resetAutoplay();
+            this.autoplay();
           }
-        }, speed);
-      },
 
-      /**
-       * Disable events during slider animation
-       */
-      disableAllEvents: function disableAllEvents() {
-        var _this4 = this;
-        var speed = this.options.speed;
+          // Change index value depending on the direction
+          direction == 'right' ? this.index++ : this.index--;
 
-        this.disableEvents = true;
+          // Disable events during slider animation
+          this.disableEvents = true;
 
-        // Enable Events
-        setTimeout(function() {
-          _this4.disableEvents = false;
-        }, speed);
+          // Highlight bullet
+          this.highlightBullet();
+
+          this.setTransition(speed);
+          this.moveWrapper();
+
+          setTimeout(function() {
+            // Switch from the cloned slide to the proper slide
+            if (_this2.index <= 0 || _this2.index > _this2.slides.length) {
+              _this2.index = _this2.updateIndex(_this2.index);
+              _this2.setTransition(0);
+              _this2.moveWrapper();
+            }
+
+            // Enable Events
+            _this2.disableEvents = false;
+          }, speed);
+        }
       },
 
       /**
@@ -340,17 +299,17 @@
        * Move slide when clicked on pagination bullet
        */
       bullets: function bullets() {
-        var _this5 = this;
+        var _this3 = this;
         var paginationItem = this.options.class.paginationItem;
         var bullets = this.pagination.querySelectorAll('.'.concat(paginationItem));
 
         Object.values(bullets).map(function(bullet, index) {
           bullet.addEventListener('click', function() {
-            if (!_this5.disableEvents) {
-              _this5.index = index;
+            if (!_this3.disableEvents) {
+              _this3.index = index;
             }
 
-            _this5.buttonsAction('right');
+            _this3.changeSlide('right');
           });
         });
       },
@@ -373,26 +332,12 @@
       },
 
       /**
-       * Call actions on click the navigation element
-       * @param {string} direction = slider move direction [left, right]
-       */
-      buttonsAction: function buttonsAction(direction) {
-        if (!this.disableEvents) {
-          this.changeSlide(direction);
-
-          // Reset autoplay
-          this.resetAutoplay();
-          this.autoplay();
-        }
-      },
-
-      /**
        * Previous button
        */
       prevBtn: function prevBtn() {
-        var _this6 = this;
+        var _this4 = this;
         this.buttons[0].addEventListener('click', function() {
-          _this6.buttonsAction('left');
+          _this4.changeSlide('left');
         });
       },
 
@@ -400,9 +345,9 @@
        * Next button
        */
       nextBtn: function nextBtn() {
-        var _this7 = this;
+        var _this5 = this;
         this.buttons[1].addEventListener('click', function() {
-          _this7.buttonsAction('right');
+          _this5.changeSlide('right');
         });
       },
 
@@ -427,13 +372,13 @@
        * Slider autoplay
        */
       autoplay: function autoplay() {
-        var _this8 = this;
+        var _this6 = this;
         var autoplay = this.options.autoplay;
 
         if (autoplay) {
           this.timer = setTimeout(function() {
-            _this8.changeSlide('right');
-            _this8.autoplay();
+            _this6.changeSlide('right', true);
+            _this6.autoplay();
           }, this.autoplayDelay);
         }
       },
@@ -446,10 +391,135 @@
       },
 
       /**
+       * Update slider position after drag event
+       */
+      updateSliderAfterDrag: function updateSliderAfterDrag() {
+        var speed = this.options.speed;
+
+        this.drag.focused = false;
+
+        if (!this.drag.dragDiff) return;
+
+        // Autoplay
+        this.autoplay();
+
+        // Move slider
+        if (Math.abs(this.drag.dragDiff) > 100) {
+          if (this.drag.dragDiff < 0) {
+            this.changeSlide('right');
+          } else {
+            this.changeSlide();
+          }
+        }
+
+        // Reset drag
+        this.setTransition(speed);
+        this.moveWrapper();
+
+        // Reset values
+        this.drag.dragDiff = 0;
+      },
+
+      /**
+       * Update slider position during drag event
+       */
+      updateSliderDuringDrag: function updateSliderDuringDrag() {
+        // Reset autoplay
+        this.resetAutoplay();
+
+        this.drag.dragDiff = this.drag.endX - this.drag.startX;
+        var movement = this.wrapperPosition - this.drag.dragDiff;
+
+        if (movement < this.drag.maxOffset && movement > -100) {
+          this.wrapper.style[this.transform] = 'translate3d('.concat(-1 * movement, 'px, 0, 0)');
+        } else {
+          this.updateSliderAfterDrag();
+        }
+      },
+
+      /**
+       * Mousedown event
+       */
+      mousedownHandler: function mousedownHandler(e) {
+        e.stopPropagation();
+
+        this.setTransition(0);
+        this.drag.focused = true;
+        this.drag.startX = e.pageX;
+      },
+
+      /**
+       * Mousemove event
+       */
+      mousemoveHandler: function mousemoveHandler(e) {
+        e.stopPropagation();
+
+        if (!this.disableEvents && this.drag.focused) {
+          // Disable links
+          if (e.target.nodeName === 'A') {
+            this.drag.isLink = true;
+          }
+
+          this.drag.endX = e.pageX;
+          this.updateSliderDuringDrag();
+        }
+      },
+
+      /**
+       * Mouseup event
+       */
+      mouseupHandler: function mouseupHandler(e) {
+        e.stopPropagation();
+        this.updateSliderAfterDrag();
+      },
+
+      /**
+       * Click event
+       */
+      clickHandler: function clickHandler(e) {
+        if (this.drag.isLink) {
+          e.preventDefault();
+        }
+
+        this.drag.isLink = false;
+      },
+
+      /**
+       * Touchstart event
+       */
+      touchstartHandler: function touchstartHandler(e) {
+        e.stopPropagation();
+
+        this.setTransition(0);
+        this.drag.focused = true;
+        this.drag.startX = e.touches[0].pageX;
+      },
+
+      /**
+       * Touchmove event
+       */
+      touchmoveHandler: function touchmoveHandler(e) {
+        e.stopPropagation();
+
+        if (!this.disableEvents && this.drag.focused) {
+          this.drag.endX = e.touches[0].pageX;
+          this.updateSliderDuringDrag();
+        }
+      },
+
+      /**
+       * Touchend event
+       */
+      touchendHandler: function touchendHandler(e) {
+        e.stopPropagation();
+        this.updateSliderAfterDrag();
+      },
+
+      /**
        * Play/Stop autoplay when tab is active/inactive
        */
       visibilityChangeHandler: function visibilityChangeHandler() {
-        var _this9 = this;
+        var _this7 = this;
         var hidden, visibilityChange;
 
         if (typeof document.hidden !== 'undefined') {
@@ -461,11 +531,10 @@
         }
 
         window.addEventListener(visibilityChange, function() {
+          _this7.resetAutoplay();
+
           if (!document[hidden]) {
-            _this9.resetAutoplay();
-            _this9.autoplay();
-          } else {
-            _this9.resetAutoplay();
+            _this7.autoplay();
           }
         });
       },
@@ -474,12 +543,9 @@
        * Calculate the slider when changing the window size
        */
       resizeHandler: function resizeHandler() {
-        var _this10 = this;
-        window.addEventListener('resize', function() {
-          _this10.setWidth();
-          _this10.moveWrapper();
-          _this10.setTransition(0);
-        });
+        this.setWidth();
+        this.setTransition(0);
+        this.moveWrapper();
       },
 
       /**
