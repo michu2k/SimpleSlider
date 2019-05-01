@@ -82,10 +82,21 @@ You can initialize more than one slider per page.
 
     // User options
     var slider = new simpleSlider('.simple-slider-second', {
-        speed: 1600, //default
-        autoplay: false, //default
+        speed: 800,
+        autoplay: false,
         class: {
-            wrapper: 'slider-wrapper' //default
+            wrapper: 'slider-wrapper'
+        },
+        onChange: function(activeSlide) {
+            console.log(activeSlide);
+        }
+    });
+
+    // SlidesPerView example
+    var slider = new simpleSlider('.simple-slider-third', {
+        slidesPerView: {
+            768: 2, // 2 slides for viewport >= 768px
+            1024: 3 // 3 slides for viewport >= 1024px
         }
     });
 </script>
@@ -95,11 +106,18 @@ You can initialize more than one slider per page.
 
 | Option  | Type | Default value | Description |
 | ----- | ----- | ----- | ----- |
-| speed | number | 1600 | Transition duration in ms |
-| delay | number | 6000 | Delay between transitions in ms (autoplay)|
-| autoplay | boolean | false | slider autoplay |
+| speed | number | 800 | Transition duration in ms |
+| delay | number | 5000 | Delay between transitions in ms (autoplay) |
+| enableDrag | boolean | true | Enable drag option | 
+| autoplay | boolean | false | Slider autoplay |
+| slidesPerView | object | 1 | The number of slides to be shown [Read more below] |
 | class:wrapper | string | 'slider-wrapper' | Wrapper class |
 | class:slide | string | 'slider-slide' | Slide class |
 | class:buttons | string | 'slider-btn' | Buttons class |
 | class:pagination | string | 'slider-pagination' | Pagination class |
 | class:paginationItem | string | 'pagination-bullet' | Pagination bullet class |
+| onChange | function | - | Function called after slide change. Can take one param <br> **1** - active slide|
+
+###### Comments
+
+**slidesPerView** - Example of this option is [Here](#example). Number of slides can't be bigger than the amount of slides in the slider.

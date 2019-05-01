@@ -16,7 +16,7 @@
      * @param {string} selector = container, where script will be defined
      * @param {object} userOptions = options defined by user
      */
-    const simpleSlider = function(selector, userOptions)
+    const simpleSlider = function(selector, userOptions = {})
     {
         const slider = {
 
@@ -27,25 +27,44 @@
                 // Defaults
                 const defaults = {
                     speed: 800, // transition duration in ms {number}
-                    delay: 6000, // delay between transitions in ms {number}
-                    slidesPerView: 1, // number of slides per view {number}
+                    delay: 5000, // delay between transitions in ms {number}
                     enableDrag: true, // enable drag option {boolean}
                     autoplay: false, // slider autoplay {boolean}
+                    slidesPerView: {}, // number of slides per view {object}
                     class: {
                         wrapper: 'slider-wrapper', // wrapper class {string}
                         slide: 'slider-slide', // slide class {string}
                         buttons: 'slider-btn', // buttons class {string}
                         pagination: 'slider-pagination', // pagination class {string}
                         paginationItem: 'pagination-bullet', // pagination bullet class {string}
-                    }
+                    },
+                    onChange: () => {} // calls when changing slide {function}
                 };
 
                 // Extends defaults
-                const replaceClasses = Object.assign(defaults.class, userOptions.class);
+                const slidesPerView = Object.assign(defaults.slidesPerView, userOptions.slidesPerView);
+                const classes = Object.assign(defaults.class, userOptions.class);
                 const options = Object.assign(defaults, userOptions);
-                Object.assign(options.class, replaceClasses);
+
+                Object.assign(options.slidesPerView, slidesPerView);
+                Object.assign(options.class, classes);
 
                 this.options = options;
+            },
+
+            /**
+             * Set the number of slides to be shown
+             */
+            calculateSlidesPerView() {
+                const {slidesPerView} = this.options;
+
+                this.slidesPerView = 1;
+
+                Object.keys(slidesPerView).forEach((key) => {
+                    if (document.body.offsetWidth >= key) {
+                        this.slidesPerView = slidesPerView[key];
+                    }
+                });
             },
 
             /**
@@ -53,7 +72,7 @@
              */
             setSliderOptions() {
                 // Get user options
-                const {delay, speed, class: {wrapper, slide, buttons, pagination}} = this.options;
+                const {speed, delay, slidesPerView, class: {wrapper, slide, buttons, pagination}} = this.options;
 
                 // DOM elements
                 this.container = document.querySelector(selector);
@@ -65,6 +84,8 @@
                 // Options
                 this.disableEvents = false;
                 this.index = 1;
+                this.slidesPerView = 1;
+                this.maxSlidesPerView = Math.max(...Object.values(slidesPerView), this.slidesPerView);
                 this.wrapperWidth = 0;
                 this.autoplayDelay = delay + speed;
                 this.transitionDuration = this.isWebkit('transitionDuration');
@@ -76,6 +97,7 @@
                     startX: 0,
                     endX: 0,
                     dragDiff: 0,
+                    minOffset: 0,
                     maxOffset: 0,
                     focused: false,
                     isLink: false
@@ -91,6 +113,7 @@
                 this.setSliderOptions();
 
                 // Create slides and set wrapper
+                this.calculateSlidesPerView();
                 this.createClones();
                 this.setWidth();
                 this.moveWrapper();
@@ -107,7 +130,7 @@
                     this.nextBtn();
                 }
 
-                // Handlers
+                // Events
                 this.attachEvents();
             },
 
@@ -134,20 +157,20 @@
                 window.addEventListener('resize', this.resizeHandler.bind(this));
                 this.visibilityChangeHandler();
             },
-
+            
             /**
              * Clone slides and append them to the DOM
              */
             createClones() {
-                const {slidesPerView, class: {slide}} = this.options;
+                const {class: {slide}} = this.options;
                 const wrapper = this.wrapper;
                 const slidesLength = this.slides.length - 1;
                 const clonesAtFront = document.createDocumentFragment();
                 const clonesAtBack = document.createDocumentFragment();
                 let cloned;
 
-                for (let i = 0; i < slidesPerView; i++) {
-                    if (slidesLength - i < 0 || i > slidesLength)  break;
+                for (let i = 0; i < this.maxSlidesPerView; i++) {
+                    if (slidesLength - i < 0 || i > slidesLength) break;
 
                     // Copy the slides from the end
                     cloned = wrapper.children[slidesLength - i].cloneNode(true);
@@ -169,10 +192,12 @@
              * Set wrapper and slides width
              */
             setWidth() {
-                const {slidesPerView} = this.options;
-                const slideWidth = Math.round(this.container.offsetWidth / slidesPerView) + 'px';
+                const slideWidth = Math.round(this.container.offsetWidth / this.slidesPerView) + 'px';
+                const offset = this.maxSlidesPerView - this.slidesPerView;
+
                 this.wrapperWidth = 0;
                 this.drag.maxOffset = 100;
+                this.drag.minOffset = -100;
 
                 Object.values(this.allSlides).map((slide, index) => {
                     // Slide width
@@ -182,8 +207,13 @@
                     this.wrapperWidth += slide.offsetWidth;
 
                     // Maximum drag offset
-                    if (index + slidesPerView < this.allSlides.length) {
+                    if (index + this.slidesPerView < this.allSlides.length - offset) {
                         this.drag.maxOffset += slide.offsetWidth;
+                    }
+
+                    // Minimum drag offset
+                    if (index < offset) {
+                        this.drag.minOffset += slide.offsetWidth;
                     }
                 });
 
@@ -194,8 +224,7 @@
              * Change wrapper position by a certain number of pixels
              */
             moveWrapper() {
-                const {slidesPerView} = this.options;
-                let activeSlide = Math.floor(slidesPerView / 2) + this.index;
+                const activeSlide = (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index;
                 this.wrapperPosition = 0;
 
                 for (let i = 0; i < activeSlide; i++) {
@@ -212,7 +241,7 @@
              * @param {boolean} isAutoplay = check if the function is called by autoplay
              */
             changeSlide(direction, isAutoplay = false) {
-                const {speed} = this.options;
+                const {speed, onChange} = this.options;
 
                 if (!this.disableEvents) {
                     // Reset autoplay
@@ -223,7 +252,7 @@
 
                     // Change index value depending on the direction
                     direction == 'right' ? this.index++ : this.index--;
-        
+
                     // Disable events during slider animation
                     this.disableEvents = true;
 
@@ -240,6 +269,9 @@
                             this.setTransition(0);
                             this.moveWrapper();
                         }
+
+                        // Call onChange function
+                        onChange(this.slides[this.index - 1]);
 
                         // Enable Events
                         this.disableEvents = false;
@@ -273,7 +305,7 @@
     
                     // Add active class to the first bullet
                     if (i == 0) {
-                        bullet.classList.add('active');
+                        bullet.classList.add('is-active');
                     }
     
                     fragment.appendChild(bullet);
@@ -313,13 +345,13 @@
                 const {class: {paginationItem}} = this.options;
 
                 // Remove active class from bullet
-                let activeBullet = this.pagination.querySelector('.active');
-                activeBullet.classList.remove('active');
+                let activeBullet = this.pagination.querySelector('.is-active');
+                activeBullet.classList.remove('is-active');
     
                 // Add class to active bullet
                 let bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
                 let index = this.updateIndex(this.index);
-                bullets[index - 1].classList.add('active');
+                bullets[index - 1].classList.add('is-active');
             },
 
             /**
@@ -418,7 +450,7 @@
                 this.drag.dragDiff = this.drag.endX - this.drag.startX;
                 const movement = this.wrapperPosition - this.drag.dragDiff;
 
-                if (movement < this.drag.maxOffset && movement > -100) {
+                if (movement < this.drag.maxOffset && movement > this.drag.minOffset) {
                     this.wrapper.style[this.transform] = `translate3d(${-1 * movement}px, 0, 0)`;
                 } else {
                     this.updateSliderAfterDrag();
@@ -530,6 +562,7 @@
              * Calculate the slider when changing the window size
              */
             resizeHandler() {
+                this.calculateSlidesPerView();
                 this.setWidth();
                 this.setTransition(0);
                 this.moveWrapper();

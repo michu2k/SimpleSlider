@@ -46,7 +46,8 @@
             background-color: #fff;
             transition: all 0.3s ease;
 
-            &.active {
+            // Active class
+            &.is-active {
                 background-color: #999;
             }
         }
@@ -62,12 +63,14 @@
         position: absolute;
         transform: translate(0, -50%);
 
+        // Previous button
         &.slider-btn-prev {
             left: 20px;
             background-image: url(../img/prev.svg);
             background-position: left;
         }
 
+        // Next button
         &.slider-btn-next {
             right: 20px;
             background-image: url(../img/next.svg);

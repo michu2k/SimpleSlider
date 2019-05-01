@@ -23,7 +23,7 @@ body {
     .pagination-bullet {
         background-color: $black !important;
 
-        &.active {
+        &.is-active {
             background-color: $white !important;
         }
     }

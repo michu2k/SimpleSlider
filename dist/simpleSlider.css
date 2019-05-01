@@ -44,7 +44,7 @@
   transition: all 0.3s ease;
 }
 
-.simple-slider .slider-pagination .pagination-bullet.active {
+.simple-slider .slider-pagination .pagination-bullet.is-active {
   background-color: #999;
 }
 

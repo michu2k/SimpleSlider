@@ -21,7 +21,7 @@ body {
   background-color: #151515 !important;
 }
 
-.slider-pagination .pagination-bullet.active {
+.slider-pagination .pagination-bullet.is-active {
   background-color: #fff !important;
 }
 

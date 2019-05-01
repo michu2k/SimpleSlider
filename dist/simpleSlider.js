@@ -1,4 +1,22 @@
-'use strict'
+'use strict';
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+}
+function _nonIterableSpread() {
+  throw new TypeError('Invalid attempt to spread non-iterable instance');
+}
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === '[object Arguments]')
+    return Array.from(iter);
+}
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+    return arr2;
+  }
+}
 /*!
  * SimpleSlider v1.8.0
  * Simple responsive slider created in pure javascript.
@@ -6,7 +24,7 @@
  *
  * Copyright 2017-2019 Michał Strumpf
  * Published under MIT License
- */;
+ */
 
 (function(window) {
   'use strict';
@@ -16,7 +34,8 @@
    * @param {string} selector = container, where script will be defined
    * @param {object} userOptions = options defined by user
    */
-  var simpleSlider = function simpleSlider(selector, userOptions) {
+  var simpleSlider = function simpleSlider(selector) {
+    var userOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var slider = {
       /**
        * Extend defaults options
@@ -25,25 +44,45 @@
         // Defaults
         var defaults = {
           speed: 800, // transition duration in ms {number}
-          delay: 6000, // delay between transitions in ms {number}
-          slidesPerView: 1, // number of slides per view {number}
+          delay: 5000, // delay between transitions in ms {number}
           enableDrag: true, // enable drag option {boolean}
           autoplay: false, // slider autoplay {boolean}
+          slidesPerView: {}, // number of slides per view {object}
           class: {
             wrapper: 'slider-wrapper', // wrapper class {string}
             slide: 'slider-slide', // slide class {string}
             buttons: 'slider-btn', // buttons class {string}
             pagination: 'slider-pagination', // pagination class {string}
             paginationItem: 'pagination-bullet' // pagination bullet class {string}
-          }
+          },
+          onChange: function onChange() {} // calls when changing slide {function}
         };
 
         // Extends defaults
-        var replaceClasses = Object.assign(defaults.class, userOptions.class);
+        var slidesPerView = Object.assign(defaults.slidesPerView, userOptions.slidesPerView);
+        var classes = Object.assign(defaults.class, userOptions.class);
         var options = Object.assign(defaults, userOptions);
-        Object.assign(options.class, replaceClasses);
+
+        Object.assign(options.slidesPerView, slidesPerView);
+        Object.assign(options.class, classes);
 
         this.options = options;
+      },
+
+      /**
+       * Set the number of slides to be shown
+       */
+      calculateSlidesPerView: function calculateSlidesPerView() {
+        var _this = this;
+        var slidesPerView = this.options.slidesPerView;
+
+        this.slidesPerView = 1;
+
+        Object.keys(slidesPerView).forEach(function(key) {
+          if (document.body.offsetWidth >= key) {
+            _this.slidesPerView = slidesPerView[key];
+          }
+        });
       },
 
       /**
@@ -52,8 +91,9 @@
       setSliderOptions: function setSliderOptions() {
         // Get user options
         var _this$options = this.options,
-          delay = _this$options.delay,
           speed = _this$options.speed,
+          delay = _this$options.delay,
+          slidesPerView = _this$options.slidesPerView,
           _this$options$class = _this$options.class,
           wrapper = _this$options$class.wrapper,
           slide = _this$options$class.slide,
@@ -70,6 +110,11 @@
         // Options
         this.disableEvents = false;
         this.index = 1;
+        this.slidesPerView = 1;
+        this.maxSlidesPerView = Math.max.apply(
+          Math,
+          _toConsumableArray(Object.values(slidesPerView)).concat([this.slidesPerView])
+        );
         this.wrapperWidth = 0;
         this.autoplayDelay = delay + speed;
         this.transitionDuration = this.isWebkit('transitionDuration');
@@ -81,6 +126,7 @@
           startX: 0,
           endX: 0,
           dragDiff: 0,
+          minOffset: 0,
           maxOffset: 0,
           focused: false,
           isLink: false
@@ -96,6 +142,7 @@
         this.setSliderOptions();
 
         // Create slides and set wrapper
+        this.calculateSlidesPerView();
         this.createClones();
         this.setWidth();
         this.moveWrapper();
@@ -112,7 +159,7 @@
           this.nextBtn();
         }
 
-        // Handlers
+        // Events
         this.attachEvents();
       },
 
@@ -144,16 +191,14 @@
        * Clone slides and append them to the DOM
        */
       createClones: function createClones() {
-        var _this$options2 = this.options,
-          slidesPerView = _this$options2.slidesPerView,
-          slide = _this$options2.class.slide;
+        var slide = this.options.class.slide;
         var wrapper = this.wrapper;
         var slidesLength = this.slides.length - 1;
         var clonesAtFront = document.createDocumentFragment();
         var clonesAtBack = document.createDocumentFragment();
         var cloned;
 
-        for (var i = 0; i < slidesPerView; i++) {
+        for (var i = 0; i < this.maxSlidesPerView; i++) {
           if (slidesLength - i < 0 || i > slidesLength) break;
 
           // Copy the slides from the end
@@ -176,22 +221,29 @@
        * Set wrapper and slides width
        */
       setWidth: function setWidth() {
-        var _this = this;
-        var slidesPerView = this.options.slidesPerView;
-        var slideWidth = Math.round(this.container.offsetWidth / slidesPerView) + 'px';
+        var _this2 = this;
+        var slideWidth = Math.round(this.container.offsetWidth / this.slidesPerView) + 'px';
+        var offset = this.maxSlidesPerView - this.slidesPerView;
+
         this.wrapperWidth = 0;
         this.drag.maxOffset = 100;
+        this.drag.minOffset = -100;
 
         Object.values(this.allSlides).map(function(slide, index) {
           // Slide width
           slide.style.width = slideWidth;
 
           // Wrapper width
-          _this.wrapperWidth += slide.offsetWidth;
+          _this2.wrapperWidth += slide.offsetWidth;
 
           // Maximum drag offset
-          if (index + slidesPerView < _this.allSlides.length) {
-            _this.drag.maxOffset += slide.offsetWidth;
+          if (index + _this2.slidesPerView < _this2.allSlides.length - offset) {
+            _this2.drag.maxOffset += slide.offsetWidth;
+          }
+
+          // Minimum drag offset
+          if (index < offset) {
+            _this2.drag.minOffset += slide.offsetWidth;
           }
         });
 
@@ -202,8 +254,7 @@
        * Change wrapper position by a certain number of pixels
        */
       moveWrapper: function moveWrapper() {
-        var slidesPerView = this.options.slidesPerView;
-        var activeSlide = Math.floor(slidesPerView / 2) + this.index;
+        var activeSlide = this.maxSlidesPerView - this.slidesPerView + Math.floor(this.slidesPerView / 2) + this.index;
         this.wrapperPosition = 0;
 
         for (var i = 0; i < activeSlide; i++) {
@@ -220,9 +271,11 @@
        * @param {boolean} isAutoplay = check if the function is called by autoplay
        */
       changeSlide: function changeSlide(direction) {
-        var _this2 = this;
+        var _this3 = this;
         var isAutoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-        var speed = this.options.speed;
+        var _this$options2 = this.options,
+          speed = _this$options2.speed,
+          onChange = _this$options2.onChange;
 
         if (!this.disableEvents) {
           // Reset autoplay
@@ -245,14 +298,17 @@
 
           setTimeout(function() {
             // Switch from the cloned slide to the proper slide
-            if (_this2.index <= 0 || _this2.index > _this2.slides.length) {
-              _this2.index = _this2.updateIndex(_this2.index);
-              _this2.setTransition(0);
-              _this2.moveWrapper();
+            if (_this3.index <= 0 || _this3.index > _this3.slides.length) {
+              _this3.index = _this3.updateIndex(_this3.index);
+              _this3.setTransition(0);
+              _this3.moveWrapper();
             }
 
+            // Call onChange function
+            onChange(_this3.slides[_this3.index - 1]);
+
             // Enable Events
-            _this2.disableEvents = false;
+            _this3.disableEvents = false;
           }, speed);
         }
       },
@@ -282,7 +338,7 @@
 
           // Add active class to the first bullet
           if (i == 0) {
-            bullet.classList.add('active');
+            bullet.classList.add('is-active');
           }
 
           fragment.appendChild(bullet);
@@ -299,17 +355,17 @@
        * Move slide when clicked on pagination bullet
        */
       bullets: function bullets() {
-        var _this3 = this;
+        var _this4 = this;
         var paginationItem = this.options.class.paginationItem;
         var bullets = this.pagination.querySelectorAll('.'.concat(paginationItem));
 
         Object.values(bullets).map(function(bullet, index) {
           bullet.addEventListener('click', function() {
-            if (!_this3.disableEvents) {
-              _this3.index = index;
+            if (!_this4.disableEvents) {
+              _this4.index = index;
             }
 
-            _this3.changeSlide('right');
+            _this4.changeSlide('right');
           });
         });
       },
@@ -322,22 +378,22 @@
         var paginationItem = this.options.class.paginationItem;
 
         // Remove active class from bullet
-        var activeBullet = this.pagination.querySelector('.active');
-        activeBullet.classList.remove('active');
+        var activeBullet = this.pagination.querySelector('.is-active');
+        activeBullet.classList.remove('is-active');
 
         // Add class to active bullet
         var bullets = this.pagination.querySelectorAll('.'.concat(paginationItem));
         var index = this.updateIndex(this.index);
-        bullets[index - 1].classList.add('active');
+        bullets[index - 1].classList.add('is-active');
       },
 
       /**
        * Previous button
        */
       prevBtn: function prevBtn() {
-        var _this4 = this;
+        var _this5 = this;
         this.buttons[0].addEventListener('click', function() {
-          _this4.changeSlide('left');
+          _this5.changeSlide('left');
         });
       },
 
@@ -345,9 +401,9 @@
        * Next button
        */
       nextBtn: function nextBtn() {
-        var _this5 = this;
+        var _this6 = this;
         this.buttons[1].addEventListener('click', function() {
-          _this5.changeSlide('right');
+          _this6.changeSlide('right');
         });
       },
 
@@ -372,13 +428,13 @@
        * Slider autoplay
        */
       autoplay: function autoplay() {
-        var _this6 = this;
+        var _this7 = this;
         var autoplay = this.options.autoplay;
 
         if (autoplay) {
           this.timer = setTimeout(function() {
-            _this6.changeSlide('right', true);
-            _this6.autoplay();
+            _this7.changeSlide('right', true);
+            _this7.autoplay();
           }, this.autoplayDelay);
         }
       },
@@ -430,7 +486,7 @@
         this.drag.dragDiff = this.drag.endX - this.drag.startX;
         var movement = this.wrapperPosition - this.drag.dragDiff;
 
-        if (movement < this.drag.maxOffset && movement > -100) {
+        if (movement < this.drag.maxOffset && movement > this.drag.minOffset) {
           this.wrapper.style[this.transform] = 'translate3d('.concat(-1 * movement, 'px, 0, 0)');
         } else {
           this.updateSliderAfterDrag();
@@ -519,7 +575,7 @@
        * Play/Stop autoplay when tab is active/inactive
        */
       visibilityChangeHandler: function visibilityChangeHandler() {
-        var _this7 = this;
+        var _this8 = this;
         var hidden, visibilityChange;
 
         if (typeof document.hidden !== 'undefined') {
@@ -531,10 +587,10 @@
         }
 
         window.addEventListener(visibilityChange, function() {
-          _this7.resetAutoplay();
+          _this8.resetAutoplay();
 
           if (!document[hidden]) {
-            _this7.autoplay();
+            _this8.autoplay();
           }
         });
       },
@@ -543,6 +599,7 @@
        * Calculate the slider when changing the window size
        */
       resizeHandler: function resizeHandler() {
+        this.calculateSlidesPerView();
         this.setWidth();
         this.setTransition(0);
         this.moveWrapper();
