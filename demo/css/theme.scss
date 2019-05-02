@@ -1,84 +1,226 @@
-$white: #fff;
-$grey: #bbb;
-$black: #151515;
+$color-white: #fff;
+$color-grey: #636363;
+$color-black: #151515;
+$color-blue: #0652dd;
+
+* {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
 
 body {
     font-family: 'Montserrat', 'Arial', sans-serif;
     font-weight: 500;
-    background-color: $black;
+    color: $color-black;
+    background-color: $color-white;
     margin: 0;
 }
 
-// Dark background
-.slider-bg {
-    width: 100%;
-    height: 100%;
-    background-color: rgba($black, 0.7);
-    display: flex;
-    align-items: flex-end;
+a {
+    text-decoration: none;
 }
 
-// Pagination
-.slider-pagination {
-    .pagination-bullet {
-        background-color: $black !important;
+// Slider
+.slider {
+    // Slide
+    &-slide {
+        display: -webkit-flex;
+        display: flex;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        background-color: $color-blue;
 
-        &.is-active {
-            background-color: $white !important;
+        &.is-bright {
+            background-color: darken($color-blue, 4%);
         }
+    }
+    
+    // Number
+    &-number {
+        font-size: 40px;
+        color: $color-white;
+        display: block;
     }
 }
 
-.slider-content {
-    padding: 20px;
-    margin: 40px;
-    max-width: 420px;
+// Subpage
+.page {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 15px;
+    max-width: 650px;
 
-    //Heading 
-    .heading {
-        font-weight: 700;
-        font-size: 30px;
-        color: $white;
+    // Heading 
+    &-heading {
+        font-size: 28px;
+        color: $color-black;
+        margin: 30px 0 0 0;
     }
 
-    //Line
-    .line {
-        margin: 20px 0;
-        width: 50px;
-        height: 2px;
-        background-color: $white;
-        border: 0;
-    }
-
-    //Desc
-    .desc {
-        font-size: 13px;
-        line-height: 18px;
-        color: $grey;
-
-        &.desc-bg {
-            font-size: 12px;
-            color: $black;
-            padding: 8px;
-            background-color: $white;
-        }
-    }
-
-    //Link
-    .link {
+    // Description
+    &-desc {
         font-size: 12px;
-        color: $black;
-        text-decoration: none;
+        color: $color-grey;
+        margin-top: 2px;
+        margin-bottom: 10px;
         display: inline-block;
-        padding: 8px 12px;
-        margin-top: 15px;
-        background-color: $white;
-        transition: all 0.2s;
+    }
+
+    // Link
+    &-link {
+        font-weight: 700;
+        font-size: 14px;
+        color: $color-blue;
+        margin-bottom: 30px;
+        display: block;
 
         &:hover,
         &:focus {
-            color: $white;
-            background-color: $black;
+            color: $color-black;
         }
+    }
+
+    // Slider
+    &-slider {
+        width: 100%;
+        height: 250px;
+    }
+
+    // code
+    &-code {
+        font-size: 15px;
+        padding: 15px 0;
+        display: block;
+
+        .code-line {
+            display: block;
+            margin-left: 30px;
+
+            &-deep {
+                display: block;
+                margin-left: 60px;
+            }
+        }
+    }
+}
+
+// Container
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// Header
+.header {
+    @extend .container;
+
+    padding: 40px;
+
+    // Heading
+    &-heading {
+        font-weight: 700;
+        font-size: 32px;
+        color: $color-black;
+        margin: 0;
+    }
+}
+
+// Main page
+.main {
+    @extend .container;
+
+    background-color: $color-white;
+
+    // Column
+    &-column {
+        width: 100%;
+        padding: 10px 40px;
+    }
+}
+
+// Content
+.content {
+    margin-bottom: 65px;
+
+    .content {
+        // Heading
+        &-heading {
+            font-weight: 700;
+            font-size: 22px;
+            color: $color-black;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+        // Line
+        &-line {
+            margin: 0;
+            width: 50px;
+            height: 2px;
+            background-color: $color-grey;
+            border: 0;
+        }
+    
+        // Desc
+        &-desc {
+            font-size: 13px;
+            line-height: 22px;
+            color: $color-grey;
+    
+            &.has-bg {
+                font-size: 12px;
+                color: $color-black;
+                padding: 6px;
+                border: 2px solid $color-grey;
+            }
+        }
+
+        // Link
+        &-link {
+            font-size: 12px;
+            color: $color-white;
+            display: inline-block;
+            padding: 8px 12px;
+            margin-top: 15px;
+            background-color: $color-black;
+            transition: all 0.2s;
+    
+            &:hover,
+            &:focus {
+                color: $color-black;
+                background-color: $color-white;
+            }
+        }
+    }
+}
+
+// Footer
+.footer {
+    @extend .container;
+
+    padding: 0 40px;
+    margin-bottom: 20px;
+
+    // Copyright text
+    &-copyright {
+        font-size: 12px;
+        color: $color-grey;
+    }
+}
+
+// Responsive
+@media screen and (min-width: 600px) {
+    .main {
+        display: -webkit-flex;
+        display: flex;
     }
 }

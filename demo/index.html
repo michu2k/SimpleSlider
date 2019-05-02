@@ -5,64 +5,54 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:500,700"> 
-    <link rel="stylesheet" href="../dist/simpleSlider.min.css">
     <link rel="stylesheet" href="css/theme.min.css">
     <title>SimpleSlider - Demo</title>
 </head>
 <body>
 
-<div class="simple-slider simple-slider-first" style="width: 100%; height: 100vh; min-height: 400px;">
-    <div class="slider-wrapper">
-        <div class="slider-slide" style="background-image: url('https://source.unsplash.com/1000x500?sea');">
-            <div class="slider-bg">
-                <div class="slider-content">
-                    <span class="heading">Hello</span>
-                    <hr class="line">
-                    <p class="desc">This is a demo page for simpleSlider script. Go to the Github page to see more details.</p>
-                    <a href="https://github.com/michu2k/SimpleSlider" class="link">Github Page</a>
-                </div>
-            </div>
-        </div>
+<header class="header">
+    <h1 class="header-heading">SimpleSlider</h1>
+</header>
 
-        <div class="slider-slide" style="background-image: url('https://source.unsplash.com/1000x500?forest');">
-            <div class="slider-bg">
-                <div class="slider-content">
-                    <span class="heading">API</span>
-                    <hr class="line">
-                    <p class="desc">SimpleSlider script is very easy to configure. You can also change some default options.</p>
-                    <a href="https://github.com/michu2k/SimpleSlider#api" class="link">View API</a>
-                </div>
-            </div>
-        </div>
+<main class="main">
+    <div class="main-column">
+        <section class="content">
+            <h2 class="content-heading">Hello</h2>
+            <hr class="content-line">
+            <p class="content-desc">This is a page for simpleSlider script. To see the demos, see the section below or go to the Github page to see more details.</p>
+            <p class="content-desc">The newest version: <b>1.8.0</b></p>
+            <a href="https://github.com/michu2k/SimpleSlider" class="content-link">Github Page</a>
+            <a href="https://github.com/michu2k/SimpleSlider#api" class="content-link">View API</a>
+        </section>
 
-        <div class="slider-slide" style="background-image: url('https://source.unsplash.com/1000x500?rocks');">
-            <div class="slider-bg">
-                <div class="slider-content">
-                    <span class="heading">Installation</span>
-                    <hr class="line">
-                    <p class="desc">You can download files from Github or install through NPM:</p>
-                    <p class="desc desc-bg">npm install simpleslider-js</p>
-                    <p class="desc">or If you prefer files from CDN:</p>
-                    <p class="desc">Remember to replace the VER with the script version.</p>
-                    <p class="desc desc-bg">https://unpkg.com/simpleslider-js@VER/dist/simpleSlider.min.js</p>
-                    <p class="desc desc-bg">https://unpkg.com/simpleslider-js@VER/dist/simpleSlider.min.css</p>
-                </div>
-            </div>
-        </div>
+        <section class="content">
+            <h2 class="content-heading">Demos</h2>
+            <hr class="content-line">
+            <p class="content-desc">A few demos presenting script in the action.</p>
+            <a href="./default.html" class="content-link" target="_blank" rel="noopener noreferrer">Default</a>
+            <a href="./autoplay.html" class="content-link" target="_blank" rel="noopener noreferrer">Autoplay</a>
+            <a href="./slidesPerView.html" class="content-link" target="_blank" rel="noopener noreferrer">slidesPerView</a>
+            <a href="./onChange.html" class="content-link" target="_blank" rel="noopener noreferrer">onChange</a>
+        </section>
     </div>
 
-    <!--Pagination-->
-    <div class="slider-pagination"></div>
+    <div class="main-column">
+        <section class="content">
+            <h2 class="content-heading">Installation</h2>
+            <hr class="content-line">
+            <p class="content-desc">You can download files from Github or install through NPM:</p>
+            <p class="content-desc has-bg">npm install simpleslider-js</p>
+            <p class="content-desc">or If you prefer files from CDN:</p>
+            <p class="content-desc has-bg">https://unpkg.com/simpleslider-js@VER/dist/simpleSlider.min.js</p>
+            <p class="content-desc has-bg">https://unpkg.com/simpleslider-js@VER/dist/simpleSlider.min.css</p>
+            <p class="content-desc">*Remember to replace the VER with the script version.</p>
+        </section>
+    </div>
+</main>
 
-    <!--Buttons-->
-    <div class="slider-btn slider-btn-prev"></div>
-    <div class="slider-btn slider-btn-next"></div>
-</div>
-
-<script src="../dist/simpleSlider.js"></script>
-<script>
-    var slider = new simpleSlider('.simple-slider-first');
-</script>
+<footer class="footer">
+    <span class="footer-copyright">&copy; 2017 - 2019</span>
+</footer>
 
 </body>
 </html>

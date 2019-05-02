@@ -175,6 +175,7 @@ function _arrayWithoutHoles(arr) {
           this.container.addEventListener('mousedown', this.mousedownHandler.bind(this));
           this.container.addEventListener('mousemove', this.mousemoveHandler.bind(this));
           this.container.addEventListener('mouseup', this.mouseupHandler.bind(this));
+          this.container.addEventListener('mouseleave', this.mouseleaveHandler.bind(this));
         }
 
         // Window
@@ -540,6 +541,14 @@ function _arrayWithoutHoles(arr) {
        * Mouseup event
        */
       mouseupHandler: function mouseupHandler(e) {
+        e.stopPropagation();
+        this.updateSliderAfterDrag();
+      },
+
+      /**
+       * Mouseleave event
+       */
+      mouseleaveHandler: function mouseleaveHandler(e) {
         e.stopPropagation();
         this.updateSliderAfterDrag();
       },

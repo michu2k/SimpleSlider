@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">  
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:500,700"> 
+    <link rel="stylesheet" href="../dist/simpleSlider.min.css">
+    <link rel="stylesheet" href="css/theme.min.css">
+    <title>SimpleSlider - Demo</title>
+</head>
+<body>
+
+<main class="page">
+    <h1 class="page-heading">Autoplay</h1>
+    <span class="page-desc">Slider with autoplay option.</span>
+    <a href="https://michu2k.github.io/SimpleSlider/demo/" class="page-link">Go Back</a>
+
+    <!-- Slider -->
+    <div class="simple-slider page-slider">
+        <div class="slider-wrapper">
+            <!-- First slide -->
+            <div class="slider-slide">
+                <span class="slider-number">1</span>
+            </div>
+
+            <!-- Second slide -->
+            <div class="slider-slide is-bright">
+                <span class="slider-number">2</span>
+            </div>
+
+            <!-- Third slide -->
+            <div class="slider-slide">
+                <span class="slider-number">3</span>
+            </div>
+
+            <!-- Fourth slide -->
+            <div class="slider-slide is-bright">
+                <span class="slider-number">4</span>
+            </div>
+        </div>
+
+        <!--Pagination (Not required)-->
+        <div class="slider-pagination"></div>
+
+        <!-- Buttons (Not required) -->
+        <div class="slider-btn slider-btn-prev"></div>
+        <div class="slider-btn slider-btn-next"></div> 
+    </div>
+    <!-- /Slider -->
+
+    <h2 class="page-heading">Code</h2>
+
+    <code class="page-code">
+        new simpleSlider('.selector', {
+            <span class="code-line">autoplay: true</span>    
+        });
+    </code>
+</main>
+
+<script src="../dist/simpleSlider.js"></script>
+<script>
+    new simpleSlider('.page-slider', {
+        autoplay: true,
+        delay: 2000
+    });
+</script>
+
+</body>
+</html>

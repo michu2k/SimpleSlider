@@ -62,7 +62,7 @@ On production use files (JS and CSS) only from **dist/** folder
 ###### Initialize the module
 ```javascript
 <script>
-    var slider = new simpleSlider('.simple-slider-first');
+    new simpleSlider('.simple-slider-first');
 </script>
 ```
 
@@ -79,10 +79,10 @@ You can initialize more than one slider per page.
 ```javascript
 <script>
     // Default options
-    var slider = new simpleSlider('.simple-slider-first');  
+    new simpleSlider('.simple-slider-first');  
 
     // User options
-    var slider = new simpleSlider('.simple-slider-second', {
+    new simpleSlider('.simple-slider-second', {
         speed: 800,
         autoplay: false,
         class: {
@@ -94,7 +94,7 @@ You can initialize more than one slider per page.
     });
 
     // SlidesPerView example
-    var slider = new simpleSlider('.simple-slider-third', {
+    new simpleSlider('.simple-slider-third', {
         slidesPerView: {
             768: 2, // 2 slides for viewport >= 768px
             1024: 3 // 3 slides for viewport >= 1024px
@@ -117,7 +117,7 @@ You can initialize more than one slider per page.
 | class:buttons | string | 'slider-btn' | Buttons class |
 | class:pagination | string | 'slider-pagination' | Pagination class |
 | class:paginationItem | string | 'pagination-bullet' | Pagination bullet class |
-| onChange | function | - | Function called after slide change. Can take one param <br> **1** - active slide|
+| onChange | function | - | Function called after slide change. Can take one param <br> (active slide) |
 
 ###### Comments
 
