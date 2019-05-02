@@ -1,5 +1,6 @@
 # SimpleSlider
 Simple responsive slider created in pure javascript.
+<br> Browsers support: All modern browsers, Internet Explorer 10+
 
 ## Version
 1.8.0
@@ -120,4 +121,4 @@ You can initialize more than one slider per page.
 
 ###### Comments
 
-**slidesPerView** - Example of this option is [Here](#example). Number of slides can't be bigger than the amount of slides in the slider.
+**slidesPerView** - Number of slides can't be bigger than the amount of slides in the slider.

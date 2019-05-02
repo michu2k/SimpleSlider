@@ -26,7 +26,7 @@
             setUserOptions() {
                 // Defaults
                 const defaults = {
-                    speed: 800, // transition duration in ms {number}
+                    speed: 600, // transition duration in ms {number}
                     delay: 5000, // delay between transitions in ms {number}
                     enableDrag: true, // enable drag option {boolean}
                     autoplay: false, // slider autoplay {boolean}
@@ -38,33 +38,11 @@
                         pagination: 'slider-pagination', // pagination class {string}
                         paginationItem: 'pagination-bullet', // pagination bullet class {string}
                     },
-                    onChange: () => {} // calls when changing slide {function}
+                    onChange: () => {} // function called after slide change {function}
                 };
 
                 // Extends defaults
-                const slidesPerView = Object.assign(defaults.slidesPerView, userOptions.slidesPerView);
-                const classes = Object.assign(defaults.class, userOptions.class);
-                const options = Object.assign(defaults, userOptions);
-
-                Object.assign(options.slidesPerView, slidesPerView);
-                Object.assign(options.class, classes);
-
-                this.options = options;
-            },
-
-            /**
-             * Set the number of slides to be shown
-             */
-            calculateSlidesPerView() {
-                const {slidesPerView} = this.options;
-
-                this.slidesPerView = 1;
-
-                Object.keys(slidesPerView).forEach((key) => {
-                    if (document.body.offsetWidth >= key) {
-                        this.slidesPerView = slidesPerView[key];
-                    }
-                });
+                this.options = this.extendDefaults(defaults, userOptions);
             },
 
             /**
@@ -85,7 +63,7 @@
                 this.disableEvents = false;
                 this.index = 1;
                 this.slidesPerView = 1;
-                this.maxSlidesPerView = Math.max(...Object.values(slidesPerView), this.slidesPerView);
+                this.maxSlidesPerView = Math.max(...Object.keys(slidesPerView).map(key => slidesPerView[key]), this.slidesPerView);
                 this.wrapperWidth = 0;
                 this.autoplayDelay = delay + speed;
                 this.transitionDuration = this.isWebkit('transitionDuration');
@@ -157,6 +135,21 @@
                 window.addEventListener('resize', this.resizeHandler.bind(this));
                 this.visibilityChangeHandler();
             },
+
+            /**
+             * Set the number of slides to be shown
+             */
+            calculateSlidesPerView() {
+                const {slidesPerView} = this.options;
+
+                this.slidesPerView = 1;
+
+                Object.keys(slidesPerView).forEach((key) => {
+                    if (document.body.offsetWidth >= key) {
+                        this.slidesPerView = slidesPerView[key];
+                    }
+                });
+            },
             
             /**
              * Clone slides and append them to the DOM
@@ -199,7 +192,9 @@
                 this.drag.maxOffset = 100;
                 this.drag.minOffset = -100;
 
-                Object.values(this.allSlides).map((slide, index) => {
+                Object.keys(this.allSlides).map((index) => {
+                    const slide = this.allSlides[index];
+
                     // Slide width
                     slide.style.width = slideWidth;
 
@@ -207,12 +202,12 @@
                     this.wrapperWidth += slide.offsetWidth;
 
                     // Maximum drag offset
-                    if (index + this.slidesPerView < this.allSlides.length - offset) {
+                    if (parseInt(index) + this.slidesPerView < this.allSlides.length - offset) {
                         this.drag.maxOffset += slide.offsetWidth;
                     }
 
                     // Minimum drag offset
-                    if (index < offset) {
+                    if (parseInt(index) < offset) {
                         this.drag.minOffset += slide.offsetWidth;
                     }
                 });
@@ -325,8 +320,8 @@
                 const {class: {paginationItem}} = this.options;
                 const bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
 
-                Object.values(bullets).map((bullet, index) => {
-                    bullet.addEventListener('click', () => {
+                Object.keys(bullets).map((index) => {
+                    bullets[index].addEventListener('click', () => {
                         if (!this.disableEvents) {
                             this.index = index;
                         }
@@ -438,6 +433,7 @@
 
                 // Reset values
                 this.drag.dragDiff = 0;
+                this.drag.isLink = false;
             },
 
             /**
@@ -462,6 +458,7 @@
              */
             mousedownHandler(e) {
                 e.stopPropagation();
+                e.preventDefault();
 
                 this.setTransition(0);
                 this.drag.focused = true;
@@ -591,6 +588,30 @@
              */
             capitalizeFirstLetter(string) {
                 return string.charAt(0).toUpperCase() + string.slice(1);
+            },
+
+            /**
+             * Extend defaults deep
+             * @param {object} defaults = defaults options defined in script
+             * @param {object} properties = user options
+             * @return {object} defaults = modified options
+             */
+            extendDefaults(defaults, properties) {
+                let property, propertyDeep;
+
+                if (properties != undefined && properties != 'undefined') {
+                    for (property in properties) {
+                        if (typeof properties[property] === 'object') {
+                            for (propertyDeep in properties[property]) {
+                                defaults[property][propertyDeep] = properties[property][propertyDeep];
+                            }
+                        } else {
+                            defaults[property] = properties[property];
+                        }
+                    }
+                }
+
+                return defaults;
             }
         };
 

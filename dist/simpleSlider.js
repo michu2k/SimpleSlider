@@ -1,4 +1,26 @@
-'use strict';
+/*!
+ * SimpleSlider v1.8.0
+ * Simple responsive slider created in pure javascript.
+ * https://github.com/michu2k/SimpleSlider
+ *
+ * Copyright 2017-2019 Michał Strumpf
+ * Published under MIT License
+ */
+
+function _typeof(obj) {
+  if (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') {
+    _typeof = function _typeof(obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype
+        ? 'symbol'
+        : typeof obj;
+    };
+  }
+  return _typeof(obj);
+}
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
 }
@@ -17,14 +39,6 @@ function _arrayWithoutHoles(arr) {
     return arr2;
   }
 }
-/*!
- * SimpleSlider v1.8.0
- * Simple responsive slider created in pure javascript.
- * https://github.com/michu2k/SimpleSlider
- *
- * Copyright 2017-2019 Michał Strumpf
- * Published under MIT License
- */
 
 (function(window) {
   'use strict';
@@ -43,7 +57,7 @@ function _arrayWithoutHoles(arr) {
       setUserOptions: function setUserOptions() {
         // Defaults
         var defaults = {
-          speed: 800, // transition duration in ms {number}
+          speed: 600, // transition duration in ms {number}
           delay: 5000, // delay between transitions in ms {number}
           enableDrag: true, // enable drag option {boolean}
           autoplay: false, // slider autoplay {boolean}
@@ -55,34 +69,11 @@ function _arrayWithoutHoles(arr) {
             pagination: 'slider-pagination', // pagination class {string}
             paginationItem: 'pagination-bullet' // pagination bullet class {string}
           },
-          onChange: function onChange() {} // calls when changing slide {function}
+          onChange: function onChange() {} // function called after slide change {function}
         };
 
         // Extends defaults
-        var slidesPerView = Object.assign(defaults.slidesPerView, userOptions.slidesPerView);
-        var classes = Object.assign(defaults.class, userOptions.class);
-        var options = Object.assign(defaults, userOptions);
-
-        Object.assign(options.slidesPerView, slidesPerView);
-        Object.assign(options.class, classes);
-
-        this.options = options;
-      },
-
-      /**
-       * Set the number of slides to be shown
-       */
-      calculateSlidesPerView: function calculateSlidesPerView() {
-        var _this = this;
-        var slidesPerView = this.options.slidesPerView;
-
-        this.slidesPerView = 1;
-
-        Object.keys(slidesPerView).forEach(function(key) {
-          if (document.body.offsetWidth >= key) {
-            _this.slidesPerView = slidesPerView[key];
-          }
-        });
+        this.options = this.extendDefaults(defaults, userOptions);
       },
 
       /**
@@ -113,7 +104,11 @@ function _arrayWithoutHoles(arr) {
         this.slidesPerView = 1;
         this.maxSlidesPerView = Math.max.apply(
           Math,
-          _toConsumableArray(Object.values(slidesPerView)).concat([this.slidesPerView])
+          _toConsumableArray(
+            Object.keys(slidesPerView).map(function(key) {
+              return slidesPerView[key];
+            })
+          ).concat([this.slidesPerView])
         );
         this.wrapperWidth = 0;
         this.autoplayDelay = delay + speed;
@@ -188,6 +183,22 @@ function _arrayWithoutHoles(arr) {
       },
 
       /**
+       * Set the number of slides to be shown
+       */
+      calculateSlidesPerView: function calculateSlidesPerView() {
+        var _this = this;
+        var slidesPerView = this.options.slidesPerView;
+
+        this.slidesPerView = 1;
+
+        Object.keys(slidesPerView).forEach(function(key) {
+          if (document.body.offsetWidth >= key) {
+            _this.slidesPerView = slidesPerView[key];
+          }
+        });
+      },
+
+      /**
        * Clone slides and append them to the DOM
        */
       createClones: function createClones() {
@@ -229,7 +240,9 @@ function _arrayWithoutHoles(arr) {
         this.drag.maxOffset = 100;
         this.drag.minOffset = -100;
 
-        Object.values(this.allSlides).map(function(slide, index) {
+        Object.keys(this.allSlides).map(function(index) {
+          var slide = _this2.allSlides[index];
+
           // Slide width
           slide.style.width = slideWidth;
 
@@ -237,12 +250,12 @@ function _arrayWithoutHoles(arr) {
           _this2.wrapperWidth += slide.offsetWidth;
 
           // Maximum drag offset
-          if (index + _this2.slidesPerView < _this2.allSlides.length - offset) {
+          if (parseInt(index) + _this2.slidesPerView < _this2.allSlides.length - offset) {
             _this2.drag.maxOffset += slide.offsetWidth;
           }
 
           // Minimum drag offset
-          if (index < offset) {
+          if (parseInt(index) < offset) {
             _this2.drag.minOffset += slide.offsetWidth;
           }
         });
@@ -359,8 +372,8 @@ function _arrayWithoutHoles(arr) {
         var paginationItem = this.options.class.paginationItem;
         var bullets = this.pagination.querySelectorAll('.'.concat(paginationItem));
 
-        Object.values(bullets).map(function(bullet, index) {
-          bullet.addEventListener('click', function() {
+        Object.keys(bullets).map(function(index) {
+          bullets[index].addEventListener('click', function() {
             if (!_this4.disableEvents) {
               _this4.index = index;
             }
@@ -474,6 +487,7 @@ function _arrayWithoutHoles(arr) {
 
         // Reset values
         this.drag.dragDiff = 0;
+        this.drag.isLink = false;
       },
 
       /**
@@ -498,6 +512,7 @@ function _arrayWithoutHoles(arr) {
        */
       mousedownHandler: function mousedownHandler(e) {
         e.stopPropagation();
+        e.preventDefault();
 
         this.setTransition(0);
         this.drag.focused = true;
@@ -628,6 +643,30 @@ function _arrayWithoutHoles(arr) {
        */
       capitalizeFirstLetter: function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+      },
+
+      /**
+       * Extend defaults deep
+       * @param {object} defaults = defaults options defined in script
+       * @param {object} properties = user options
+       * @return {object} defaults = modified options
+       */
+      extendDefaults: function extendDefaults(defaults, properties) {
+        var property, propertyDeep;
+
+        if (properties != undefined && properties != 'undefined') {
+          for (property in properties) {
+            if (_typeof(properties[property]) === 'object') {
+              for (propertyDeep in properties[property]) {
+                defaults[property][propertyDeep] = properties[property][propertyDeep];
+              }
+            } else {
+              defaults[property] = properties[property];
+            }
+          }
+        }
+
+        return defaults;
       }
     };
 
