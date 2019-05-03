@@ -83,7 +83,7 @@ You can initialize more than one slider per page.
 
     // User options
     new simpleSlider('.simple-slider-second', {
-        speed: 800,
+        speed: 600,
         autoplay: false,
         class: {
             wrapper: 'slider-wrapper'
@@ -107,7 +107,7 @@ You can initialize more than one slider per page.
 
 | Option  | Type | Default value | Description |
 | ----- | ----- | ----- | ----- |
-| speed | number | 800 | Transition duration in ms |
+| speed | number | 600 | Transition duration in ms |
 | delay | number | 5000 | Delay between transitions in ms (autoplay) |
 | enableDrag | boolean | true | Enable drag option | 
 | autoplay | boolean | false | Slider autoplay |

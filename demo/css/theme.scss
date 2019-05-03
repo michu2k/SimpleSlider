@@ -142,7 +142,7 @@ a {
 
     // Column
     &-column {
-        width: 100%;
+        flex: 1 1 50%;
         padding: 10px 40px;
     }
 }
@@ -163,11 +163,12 @@ a {
 
         // Line
         &-line {
-            margin: 0;
             width: 50px;
             height: 2px;
+            text-align: left;
             background-color: $color-grey;
             border: 0;
+            margin: 0;
         }
     
         // Desc
