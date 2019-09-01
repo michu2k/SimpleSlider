@@ -4,224 +4,224 @@ $color-black: #151515;
 $color-blue: #0652dd;
 
 * {
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
 body {
-    height: 100%;
+  height: 100%;
 }
 
 body {
-    font-family: 'Montserrat', 'Arial', sans-serif;
-    font-weight: 500;
-    color: $color-black;
-    background-color: $color-white;
-    margin: 0;
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-weight: 500;
+  color: $color-black;
+  background-color: $color-white;
+  margin: 0;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 // Slider
 .slider {
-    // Slide
-    &-slide {
-        display: -webkit-flex;
-        display: flex;
-        -webkit-align-items: center;
-        align-items: center;
-        -webkit-justify-content: center;
-        justify-content: center;
-        background-color: $color-blue;
+  // Slide
+  &-slide {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    background-color: $color-blue;
 
-        &.is-bright {
-            background-color: darken($color-blue, 4%);
-        }
+    &.is-bright {
+      background-color: darken($color-blue, 4%);
     }
+  }
     
-    // Number
-    &-number {
-        font-size: 40px;
-        color: $color-white;
-        display: block;
-    }
+  // Number
+  &-number {
+    font-size: 40px;
+    color: $color-white;
+    display: block;
+  }
 }
 
 // Subpage
 .page {
-    margin-left: auto;
-    margin-right: auto;
-    padding: 15px;
-    max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px;
+  max-width: 650px;
 
-    // Heading 
-    &-heading {
-        font-size: 28px;
-        color: $color-black;
-        margin: 30px 0 0 0;
+  // Heading 
+  &-heading {
+    font-size: 28px;
+    color: $color-black;
+    margin: 30px 0 0 0;
+  }
+
+  // Description
+  &-desc {
+    font-size: 12px;
+    color: $color-grey;
+    margin-top: 2px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  // Link
+  &-link {
+    font-weight: 700;
+    font-size: 14px;
+    color: $color-blue;
+    margin-bottom: 30px;
+    display: block;
+
+    &:hover,
+    &:focus {
+      color: $color-black;
     }
+  }
 
-    // Description
-    &-desc {
-        font-size: 12px;
-        color: $color-grey;
-        margin-top: 2px;
-        margin-bottom: 10px;
-        display: inline-block;
-    }
+  // Slider
+  &-slider {
+    width: 100%;
+    height: 250px;
+  }
 
-    // Link
-    &-link {
-        font-weight: 700;
-        font-size: 14px;
-        color: $color-blue;
-        margin-bottom: 30px;
+  // code
+  &-code {
+    font-size: 15px;
+    padding: 15px 0;
+    display: block;
+
+    .code-line {
+      display: block;
+      margin-left: 30px;
+
+      &-deep {
         display: block;
-
-        &:hover,
-        &:focus {
-            color: $color-black;
-        }
+        margin-left: 60px;
+      }
     }
-
-    // Slider
-    &-slider {
-        width: 100%;
-        height: 250px;
-    }
-
-    // code
-    &-code {
-        font-size: 15px;
-        padding: 15px 0;
-        display: block;
-
-        .code-line {
-            display: block;
-            margin-left: 30px;
-
-            &-deep {
-                display: block;
-                margin-left: 60px;
-            }
-        }
-    }
+  }
 }
 
 // Container
 .container {
-    width: 100%;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
+  width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 // Header
 .header {
-    @extend .container;
+  @extend .container;
 
-    padding: 40px;
+  padding: 40px;
 
-    // Heading
-    &-heading {
-        font-weight: 700;
-        font-size: 32px;
-        color: $color-black;
-        margin: 0;
-    }
+  // Heading
+  &-heading {
+    font-weight: 700;
+    font-size: 32px;
+    color: $color-black;
+    margin: 0;
+  }
 }
 
 // Main page
 .main {
-    @extend .container;
+  @extend .container;
 
-    background-color: $color-white;
+  background-color: $color-white;
 
-    // Column
-    &-column {
-        flex: 1 1 50%;
-        padding: 10px 40px;
-    }
+  // Column
+  &-column {
+    flex: 1 1 50%;
+    padding: 10px 40px;
+  }
 }
 
 // Content
 .content {
-    margin-bottom: 65px;
+  margin-bottom: 65px;
 
-    .content {
-        // Heading
-        &-heading {
-            font-weight: 700;
-            font-size: 22px;
-            color: $color-black;
-            margin-bottom: 10px;
-            margin-top: 0;
-        }
-
-        // Line
-        &-line {
-            width: 50px;
-            height: 2px;
-            text-align: left;
-            background-color: $color-grey;
-            border: 0;
-            margin: 0;
-        }
-    
-        // Desc
-        &-desc {
-            font-size: 13px;
-            line-height: 22px;
-            color: $color-grey;
-    
-            &.has-bg {
-                font-size: 12px;
-                color: $color-black;
-                padding: 6px;
-                border: 2px solid $color-grey;
-            }
-        }
-
-        // Link
-        &-link {
-            font-size: 12px;
-            color: $color-white;
-            display: inline-block;
-            padding: 8px 12px;
-            margin-top: 15px;
-            background-color: $color-black;
-            transition: all 0.2s;
-    
-            &:hover,
-            &:focus {
-                color: $color-black;
-                background-color: $color-white;
-            }
-        }
+  .content {
+    // Heading
+    &-heading {
+      font-weight: 700;
+      font-size: 22px;
+      color: $color-black;
+      margin-bottom: 10px;
+      margin-top: 0;
     }
+
+    // Line
+    &-line {
+      width: 50px;
+      height: 2px;
+      text-align: left;
+      background-color: $color-grey;
+      border: 0;
+      margin: 0;
+    }
+    
+    // Desc
+    &-desc {
+      font-size: 13px;
+      line-height: 22px;
+      color: $color-grey;
+    
+      &.has-bg {
+        font-size: 12px;
+        color: $color-black;
+        padding: 6px;
+        border: 2px solid $color-grey;
+      }
+    }
+
+    // Link
+    &-link {
+      font-size: 12px;
+      color: $color-white;
+      display: inline-block;
+      padding: 8px 12px;
+      margin-top: 15px;
+      background-color: $color-black;
+      transition: all 0.2s;
+    
+      &:hover,
+      &:focus {
+        color: $color-black;
+        background-color: $color-white;
+      }
+    }
+  }
 }
 
 // Footer
 .footer {
-    @extend .container;
+  @extend .container;
 
-    padding: 0 40px;
-    margin-bottom: 20px;
+  padding: 0 40px;
+  margin-bottom: 20px;
 
-    // Copyright text
-    &-copyright {
-        font-size: 12px;
-        color: $color-grey;
-    }
+  // Copyright text
+  &-copyright {
+    font-size: 12px;
+    color: $color-grey;
+  }
 }
 
 // Responsive
 @media screen and (min-width: 600px) {
-    .main {
-        display: -webkit-flex;
-        display: flex;
-    }
+  .main {
+    display: -webkit-flex;
+    display: flex;
+  }
 }

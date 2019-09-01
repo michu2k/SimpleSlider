@@ -17,6 +17,7 @@
   position: relative;
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
+  -webkit-transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
   transition-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
 }
 
@@ -41,6 +42,7 @@
   height: 5px;
   margin: 4px;
   background-color: #fff;
+  -webkit-transition: all 0.3s ease;
   transition: all 0.3s ease;
 }
 
@@ -61,12 +63,12 @@
 
 .simple-slider .slider-btn.slider-btn-prev {
   left: 20px;
-  background-image: url(../img/prev.svg);
+  background-image: url("../img/prev.svg");
   background-position: left;
 }
 
 .simple-slider .slider-btn.slider-btn-next {
   right: 20px;
-  background-image: url(../img/next.svg);
+  background-image: url("../img/next.svg");
   background-position: right;
 }

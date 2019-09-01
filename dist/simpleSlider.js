@@ -1,12 +1,4 @@
-/*!
- * SimpleSlider v1.8.0
- * Simple responsive slider created in pure javascript.
- * https://github.com/michu2k/SimpleSlider
- *
- * Copyright 2017-2019 Michał Strumpf
- * Published under MIT License
- */
-
+'use strict';
 function _typeof(obj) {
   if (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') {
     _typeof = function _typeof(obj) {
@@ -39,6 +31,14 @@ function _arrayWithoutHoles(arr) {
     return arr2;
   }
 }
+/*!
+ * SimpleSlider v1.8.0
+ * Simple responsive slider created in pure javascript.
+ * https://github.com/michu2k/SimpleSlider
+ *
+ * Copyright 2017-2019 Michał Strumpf
+ * Published under MIT License
+ */
 
 (function(window) {
   'use strict';
