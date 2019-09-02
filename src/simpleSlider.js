@@ -16,7 +16,7 @@
    * @param {string} selector = container, where script will be defined
    * @param {object} userOptions = options defined by user
    */
-  const simpleSlider = function(selector, userOptions = {})
+  const SimpleSlider = function(selector, userOptions = {})
   {
     const slider = {
 
@@ -627,6 +627,10 @@
     slider.init();
   };
 
-  window.simpleSlider = simpleSlider;
+  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = SimpleSlider;
+  } else {
+    window.SimpleSlider = SimpleSlider;
+  }
 
 })(window);

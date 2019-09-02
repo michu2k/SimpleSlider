@@ -48,7 +48,7 @@ function _arrayWithoutHoles(arr) {
    * @param {string} selector = container, where script will be defined
    * @param {object} userOptions = options defined by user
    */
-  var simpleSlider = function simpleSlider(selector) {
+  var SimpleSlider = function SimpleSlider(selector) {
     var userOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var slider = {
       /**
@@ -682,5 +682,9 @@ function _arrayWithoutHoles(arr) {
     slider.init();
   };
 
-  window.simpleSlider = simpleSlider;
+  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = SimpleSlider;
+  } else {
+    window.SimpleSlider = SimpleSlider;
+  }
 })(window);
