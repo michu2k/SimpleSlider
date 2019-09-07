@@ -40,7 +40,7 @@
       };
 
       // Extends defaults
-      this.options = this.extendDefaults(defaults, userOptions);
+      this.options = extendDefaults(defaults, userOptions);
     };
 
     /**
@@ -64,8 +64,8 @@
       this.maxSlidesPerView = Math.max(...Object.keys(slidesPerView).map(key => slidesPerView[key]), this.slidesPerView);
       this.wrapperWidth = 0;
       this.autoplayDelay = delay + speed;
-      this.transitionDuration = this.isWebkit('transitionDuration');
-      this.transform = this.isWebkit('transform');
+      this.transitionDuration = isWebkit('transitionDuration');
+      this.transform = isWebkit('transform');
       this.timer;
 
       // Drag values
@@ -121,7 +121,7 @@
       const { enableDrag } = this.options;
 
       // Bind all event handlers
-      ['touchstart', 'touchmove', 'touchend', 'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave', 'resize'].map(handler => {
+      ['touchstart', 'touchmove', 'touchend', 'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave', 'resize', 'visibilitychange'].map(handler => {
         this[`${handler}Handler`] = this[`${handler}Handler`].bind(this);
       });
 
@@ -141,7 +141,7 @@
 
       // Window
       window.addEventListener('resize', this.resizeHandler);
-      this.visibilityChangeHandler();
+      window.addEventListener('visibilitychange', this.visibilitychangeHandler);
     };
 
     /**
@@ -162,6 +162,7 @@
 
       // Window
       window.removeEventListener('resize', this.resizeHandler);
+      window.removeEventListener('visibilitychange', this.visibilitychangeHandler);
     };
     
     /**
@@ -286,10 +287,10 @@
         this.moveWrapper();
 
         // Call onChange function
-        onChange(this.slides[this.index - 1]);
+        onChange();
 
         setTimeout(() => {
-          // Switch from the cloned slide to the proper slide
+          // Switch from the clonedk slide to the proper slide
           if (this.index <= 0 || this.index > this.slides.length) {
             this.index = this.updateIndex(this.index);
             this.setTransition(0);
@@ -300,7 +301,7 @@
           this.disableEvents = false;
         }, speed);
       }
-    },
+    };
 
     /** 
      * Set transition duration
@@ -308,7 +309,7 @@
      */
     this.setTransition = speed => {
       this.wrapper.style[this.transitionDuration] = speed + 'ms';
-    },    
+    };
 
     /**
      * Create slider pagination
@@ -339,7 +340,7 @@
   
       // Bullets action
       this.paginationBullets();
-    },
+    };
 
     /**
      * Move slide when clicked on pagination bullet
@@ -357,7 +358,7 @@
           this.changeSlide('right');
         });
       });
-    },
+    };
 
     /**
      * Highlight active bullet
@@ -375,7 +376,7 @@
       let bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
       let index = this.updateIndex(this.index);
       bullets[index - 1].classList.add('is-active');
-    },
+    };
 
     /**
      * Previous button
@@ -384,7 +385,7 @@
       this.buttons[0].addEventListener('click', () => {
         this.changeSlide('left');
       });
-    },
+    };
   
     /**
      * Next button
@@ -393,7 +394,7 @@
       this.buttons[1].addEventListener('click', () => {
         this.changeSlide('right');
       });
-    },
+    };
 
     /**
      * Update index
@@ -410,7 +411,7 @@
       }
   
       return index;
-    },
+    };
 
     /** 
      * Slider autoplay
@@ -424,14 +425,14 @@
           this.autoplay();
         }, this.autoplayDelay);
       }
-    },
+    };
 
     /**
      * Reset slider autoplay
      */
     this.resetAutoplay = () => {
       clearTimeout(this.timer);
-    },
+    };
 
     /**
      * Update slider position after drag event
@@ -462,7 +463,7 @@
       // Reset values
       this.drag.dragDiff = 0;
       this.drag.isLink = false;
-    },
+    };
 
     /**
      * Update slider position during drag event
@@ -479,7 +480,7 @@
       } else {
         this.updateSliderAfterDrag();
       }
-    },
+    };
 
     /**
      * Mousedown event
@@ -491,7 +492,7 @@
       this.setTransition(0);
       this.drag.focused = true;
       this.drag.startX = e.pageX;
-    },
+    };
 
     /**
      * Mousemove event
@@ -508,7 +509,7 @@
         this.drag.endX = e.pageX;
         this.updateSliderDuringDrag();
       }
-    },
+    };
 
     /**
      * Mouseup event
@@ -516,7 +517,7 @@
     this.mouseupHandler = e => {
       e.stopPropagation();
       this.updateSliderAfterDrag();
-    },
+    };
 
     /**
      * Mouseleave event
@@ -524,7 +525,7 @@
     this.mouseleaveHandler = e => {
       e.stopPropagation();
       this.updateSliderAfterDrag();
-    },
+    };
 
     /**
      * Click event
@@ -535,7 +536,7 @@
       }
 
       this.drag.isLink = false;
-    },
+    };
 
     /**
      * Touchstart event
@@ -546,7 +547,7 @@
       this.setTransition(0);
       this.drag.focused = true;
       this.drag.startX = e.touches[0].pageX;
-    },
+    };
 
     /**
      * Touchmove event
@@ -558,7 +559,7 @@
         this.drag.endX = e.touches[0].pageX;
         this.updateSliderDuringDrag();
       }
-    },
+    };
   
     /**
      * Touchend event
@@ -566,30 +567,18 @@
     this.touchendHandler = e => {
       e.stopPropagation();
       this.updateSliderAfterDrag();
-    },
+    };
 
     /**
      * Play/Stop autoplay when tab is active/inactive
      */
-    this.visibilityChangeHandler = e => {
-      let hidden, visibilityChange;
-  
-      if (typeof document.hidden !== 'undefined') {
-        hidden = 'hidden';
-        visibilityChange = 'visibilitychange';
-      } else {
-        hidden = 'webkitHidden';
-        visibilityChange = 'webkitvisibilitychange';
-      }
-  
-      window.addEventListener(visibilityChange, () => {
-        this.resetAutoplay();
+    this.visibilitychangeHandler = () => {
+      this.resetAutoplay();
 
-        if (!document[hidden]) {
-          this.autoplay();
-        }
-      });
-    },
+      if (!document.hidden) {
+        this.autoplay();
+      }
+    };
 
     /**
      * Calculate the slider when changing the window size
@@ -599,38 +588,31 @@
       this.setWidth();
       this.setTransition(0);
       this.moveWrapper();
-    },
+    };
 
     /**
      * Get supported property and add webkit prefix if needed
      * @param {string} property = property name
      * @return {string} property = property with optional webkit prefix
      */
-    this.isWebkit = property => {
+    const isWebkit = property => {
       if (typeof document.documentElement.style[property] === 'string') {
         return property;
       }
 
-      property = this.capitalizeFirstLetter(property);
-      property = `webkit${property}`;
+      // Capitalize the first letter
+      property = property.charAt(0).toUpperCase() + property.slice(1);
 
-      return property;
-    },
-
-    /**
-     * Capitalize the first letter in the string
-     * @param {string} string = string
-     * @return {string} string = changed string
-     */
-    this.capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1),
+      return `webkit${property}`;
+    };
 
     /**
-     * Extend defaults deep
+     * Extend defaults
      * @param {object} defaults = defaults options defined in script
      * @param {object} properties = user options
      * @return {object} defaults = modified options
      */
-    this.extendDefaults = (defaults, properties) => {
+    const extendDefaults = (defaults, properties) => {
       let property, propertyDeep;
 
       if (properties != undefined && properties != 'undefined') {
