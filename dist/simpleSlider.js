@@ -195,6 +195,26 @@ function _arrayWithoutHoles(arr) {
     };
 
     /**
+     * Detach events
+     */
+    this.detachEvents = function() {
+      // Touch
+      _this.container.removeEventListener('touchstart', _this.touchstartHandler);
+      _this.container.removeEventListener('touchmove', _this.touchmoveHandler);
+      _this.container.removeEventListener('touchend', _this.touchendHandler);
+
+      // Mouse
+      _this.container.removeEventListener('click', _this.clickHandler);
+      _this.container.removeEventListener('mousedown', _this.mousedownHandler);
+      _this.container.removeEventListener('mousemove', _this.mousemoveHandler);
+      _this.container.removeEventListener('mouseup', _this.mouseupHandler);
+      _this.container.removeEventListener('mouseleave', _this.mouseleaveHandler);
+
+      // Window
+      window.removeEventListener('resize', _this.resizeHandler);
+    };
+
+    /**
      * Set the number of slides to be shown
      */
     this.calculateSlidesPerView = function() {

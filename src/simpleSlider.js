@@ -143,6 +143,26 @@
       window.addEventListener('resize', this.resizeHandler);
       this.visibilityChangeHandler();
     };
+
+    /**
+     * Detach events
+     */
+    this.detachEvents = () => {
+      // Touch
+      this.container.removeEventListener('touchstart', this.touchstartHandler);
+      this.container.removeEventListener('touchmove', this.touchmoveHandler);
+      this.container.removeEventListener('touchend', this.touchendHandler);
+
+      // Mouse
+      this.container.removeEventListener('click', this.clickHandler);
+      this.container.removeEventListener('mousedown', this.mousedownHandler);
+      this.container.removeEventListener('mousemove', this.mousemoveHandler);
+      this.container.removeEventListener('mouseup', this.mouseupHandler);
+      this.container.removeEventListener('mouseleave', this.mouseleaveHandler);
+
+      // Window
+      window.removeEventListener('resize', this.resizeHandler);
+    };
     
     /**
      * Set the number of slides to be shown
