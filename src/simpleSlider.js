@@ -101,12 +101,6 @@
   
       // Autoplay
       this.autoplay();
-  
-      // Buttons
-      if (this.buttons.length == 2) {
-        this.prevBtn();
-        this.nextBtn();
-      }
 
       // Events
       this.attachEvents();
@@ -119,25 +113,48 @@
      */
     this.attachEvents = () => {
       const { enableDrag } = this.options;
+      const c = this.container;
 
       // Bind all event handlers
-      ['touchstart', 'touchmove', 'touchend', 'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave', 'resize', 'visibilitychange'].map(handler => {
-        this[`${handler}Handler`] = this[`${handler}Handler`].bind(this);
+      ['touchstartHandler',
+        'touchmoveHandler',
+        'touchendHandler',
+        'clickHandler',
+        'mousedownHandler',
+        'mousemoveHandler',
+        'mouseupHandler',
+        'mouseleaveHandler',
+        'resizeHandler',
+        'visibilitychangeHandler',
+        'paginationBulletsHandler',
+        'prevBtn',
+        'nextBtn'
+      ].map(handler => {
+        this[handler] = this[handler].bind(this);
       });
 
       if (enableDrag) {
         // Touch
-        this.container.addEventListener('touchstart', this.touchstartHandler);
-        this.container.addEventListener('touchmove', this.touchmoveHandler);
-        this.container.addEventListener('touchend', this.touchendHandler);
+        c.addEventListener('touchstart', this.touchstartHandler);
+        c.addEventListener('touchmove', this.touchmoveHandler);
+        c.addEventListener('touchend', this.touchendHandler);
 
         // Mouse
-        this.container.addEventListener('click', this.clickHandler);
-        this.container.addEventListener('mousedown', this.mousedownHandler);
-        this.container.addEventListener('mousemove', this.mousemoveHandler);
-        this.container.addEventListener('mouseup', this.mouseupHandler);
-        this.container.addEventListener('mouseleave', this.mouseleaveHandler);
+        c.addEventListener('click', this.clickHandler);
+        c.addEventListener('mousedown', this.mousedownHandler);
+        c.addEventListener('mousemove', this.mousemoveHandler);
+        c.addEventListener('mouseup', this.mouseupHandler);
+        c.addEventListener('mouseleave', this.mouseleaveHandler);
       }
+  
+      // Buttons
+      if (this.buttons.length === 2) {
+        this.buttons[0].addEventListener('click', this.prevBtn);
+        this.buttons[1].addEventListener('click', this.nextBtn);
+      }
+
+      // Pagination
+      c.addEventListener('click', this.paginationBulletsHandler);
 
       // Window
       window.addEventListener('resize', this.resizeHandler);
@@ -148,17 +165,26 @@
      * Detach events
      */
     this.detachEvents = () => {
+      const c = this.container;
+      
       // Touch
-      this.container.removeEventListener('touchstart', this.touchstartHandler);
-      this.container.removeEventListener('touchmove', this.touchmoveHandler);
-      this.container.removeEventListener('touchend', this.touchendHandler);
+      c.removeEventListener('touchstart', this.touchstartHandler);
+      c.removeEventListener('touchmove', this.touchmoveHandler);
+      c.removeEventListener('touchend', this.touchendHandler);
 
       // Mouse
-      this.container.removeEventListener('click', this.clickHandler);
-      this.container.removeEventListener('mousedown', this.mousedownHandler);
-      this.container.removeEventListener('mousemove', this.mousemoveHandler);
-      this.container.removeEventListener('mouseup', this.mouseupHandler);
-      this.container.removeEventListener('mouseleave', this.mouseleaveHandler);
+      c.removeEventListener('click', this.clickHandler);
+      c.removeEventListener('mousedown', this.mousedownHandler);
+      c.removeEventListener('mousemove', this.mousemoveHandler);
+      c.removeEventListener('mouseup', this.mouseupHandler);
+      c.removeEventListener('mouseleave', this.mouseleaveHandler);
+
+      // Buttons
+      this.buttons[0].removeEventListener('click', this.prevBtn);
+      this.buttons[1].removeEventListener('click', this.nextBtn);
+
+      // Pagination
+      c.removeEventListener('click', this.paginationBulletsHandler);
 
       // Window
       window.removeEventListener('resize', this.resizeHandler);
@@ -173,7 +199,7 @@
 
       this.slidesPerView = 1;
 
-      Object.keys(slidesPerView).forEach((key) => {
+      Object.keys(slidesPerView).forEach(key => {
         if (document.body.offsetWidth >= key) {
           this.slidesPerView = slidesPerView[key];
         }
@@ -224,10 +250,7 @@
       Object.keys(this.allSlides).map(index => {
         const slide = this.allSlides[index];
 
-        // Slide width
         slide.style.width = slideWidth;
-
-        // Wrapper width
         this.wrapperWidth += slide.offsetWidth;
 
         // Maximum drag offset
@@ -268,6 +291,7 @@
       const { speed, onChange } = this.options;
 
       if (!this.disableEvents) {
+
         // Reset autoplay
         if (!isAutoplay) {
           this.resetAutoplay();
@@ -280,9 +304,7 @@
         // Disable events during slider animation
         this.disableEvents = true;
 
-        // Highlight bullet
         this.highlightPaginationBullet();
-      
         this.setTransition(speed);
         this.moveWrapper();
 
@@ -290,7 +312,7 @@
         onChange();
 
         setTimeout(() => {
-          // Switch from the clonedk slide to the proper slide
+          // Switch from the cloned slide to the proper slide
           if (this.index <= 0 || this.index > this.slides.length) {
             this.index = this.updateIndex(this.index);
             this.setTransition(0);
@@ -337,27 +359,24 @@
   
       // Append bullets to the DOM
       this.pagination.appendChild(fragment);
-  
-      // Bullets action
-      this.paginationBullets();
+      this.paginationBullets = this.pagination.querySelectorAll(`.${paginationItem}`);
     };
 
     /**
      * Move slide when clicked on pagination bullet
      */
-    this.paginationBullets = () => {
+    this.paginationBulletsHandler = e => {
       const { class: { paginationItem } } = this.options;
-      const bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
 
-      Object.keys(bullets).map(index => {
-        bullets[index].addEventListener('click', () => {
-          if (!this.disableEvents) {
-            this.index = index;
-          }
-  
-          this.changeSlide('right');
-        });
-      });
+      if (e.target.classList.contains(paginationItem)) {
+        const index = [...this.paginationBullets].indexOf(e.target);
+
+        if (!this.disableEvents) {
+          this.index = index;
+        }
+
+        this.changeSlide('right');
+      }
     };
 
     /**
@@ -382,18 +401,14 @@
      * Previous button
      */
     this.prevBtn = () => {
-      this.buttons[0].addEventListener('click', () => {
-        this.changeSlide('left');
-      });
+      this.changeSlide('left');
     };
-  
+
     /**
      * Next button
      */
     this.nextBtn = () => {
-      this.buttons[1].addEventListener('click', () => {
-        this.changeSlide('right');
-      });
+      this.changeSlide('right');
     };
 
     /**
@@ -401,7 +416,7 @@
      * @param {number} index = index value
      * @return {number} index = index value after correction
      */
-    this.updateIndex = index =>  {
+    this.updateIndex = index => {
       if (index > this.slides.length) {
         index = 1;
       }
@@ -469,7 +484,6 @@
      * Update slider position during drag event
      */
     this.updateSliderDuringDrag = () => {
-      // Reset autoplay
       this.resetAutoplay();
 
       this.drag.dragDiff = this.drag.endX - this.drag.startX;
