@@ -38,8 +38,6 @@ function compileSass() {
     .pipe(sass({outputStyle: 'expanded'})
       .on('error', sass.logError))
     .pipe(autoprefixer({cascade: false}))
-    .pipe(gulp.dest(config.distCSS))
-    .pipe(browserSync.stream())
     .pipe(cleanCSS())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(config.distCSS))
@@ -61,7 +59,6 @@ function compileJs() {
       printWidth: 120,
       singleQuote: true
     }))
-    .pipe(gulp.dest(config.distJS)) 
     .pipe(uglify())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(config.distJS))
