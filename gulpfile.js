@@ -6,7 +6,6 @@ const uglify       = require('gulp-uglify');
 const browserSync  = require('browser-sync').create();
 const rename       = require('gulp-rename');
 const autoprefixer = require('gulp-autoprefixer');
-const prettier     = require('gulp-prettier');
 const eslint       = require('gulp-eslint');
 
 // Config
@@ -55,10 +54,6 @@ function compileJs() {
       console.log(error.toString());
       this.emit('end');
     })
-    .pipe(prettier({
-      printWidth: 120,
-      singleQuote: true
-    }))
     .pipe(uglify())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(config.distJS))
