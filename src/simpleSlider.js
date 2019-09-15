@@ -63,7 +63,6 @@
       this.slidesPerView = 1;
       this.maxSlidesPerView = Math.max(...Object.keys(slidesPerView).map(key => slidesPerView[key]), this.slidesPerView);
       this.wrapperWidth = 0;
-      this.autoplayDelay = delay + speed;
       this.transitionDuration = isWebkit('transitionDuration');
       this.transform = isWebkit('transform');
       this.timer;
@@ -127,8 +126,8 @@
         'resizeHandler',
         'visibilitychangeHandler',
         'paginationBulletsHandler',
-        'prevBtn',
-        'nextBtn'
+        'prevSlide',
+        'nextSlide'
       ].map(handler => {
         this[handler] = this[handler].bind(this);
       });
@@ -149,8 +148,8 @@
   
       // Buttons
       if (this.buttons.length === 2) {
-        this.buttons[0].addEventListener('click', this.prevBtn);
-        this.buttons[1].addEventListener('click', this.nextBtn);
+        this.buttons[0].addEventListener('click', this.prevSlide);
+        this.buttons[1].addEventListener('click', this.nextSlide);
       }
 
       // Pagination
@@ -180,8 +179,8 @@
       c.removeEventListener('mouseleave', this.mouseleaveHandler);
 
       // Buttons
-      this.buttons[0].removeEventListener('click', this.prevBtn);
-      this.buttons[1].removeEventListener('click', this.nextBtn);
+      this.buttons[0].removeEventListener('click', this.prevSlide);
+      this.buttons[1].removeEventListener('click', this.nextSlide);
 
       // Pagination
       c.removeEventListener('click', this.paginationBulletsHandler);
@@ -375,7 +374,7 @@
           this.index = index;
         }
 
-        this.changeSlide('right');
+        this.nextSlide();
       }
     };
 
@@ -398,16 +397,16 @@
     };
 
     /**
-     * Previous button
+     * Previous Slide
      */
-    this.prevBtn = () => {
+    this.prevSlide = () => {
       this.changeSlide('left');
     };
 
     /**
-     * Next button
+     * Next Slide
      */
-    this.nextBtn = () => {
+    this.nextSlide = () => {
       this.changeSlide('right');
     };
 
@@ -432,13 +431,13 @@
      * Slider autoplay
      */
     this.autoplay = () => {
-      const { autoplay } = this.options;
+      const { autoplay, delay, speed } = this.options;
 
       if (autoplay) {
         this.timer = setTimeout(() => {
           this.changeSlide('right', true);
           this.autoplay();
-        }, this.autoplayDelay);
+        }, delay + speed);
       }
     };
 
@@ -465,9 +464,9 @@
       // Move slider
       if (Math.abs(this.drag.dragDiff) > 100) {
         if (this.drag.dragDiff < 0) {
-          this.changeSlide('right');
+          this.nextSlide();
         } else {
-          this.changeSlide();
+          this.prevSlide();
         }
       }
 

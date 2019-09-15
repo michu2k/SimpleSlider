@@ -137,22 +137,17 @@ You can initialize more than one slider per page.
 ###### Other functions and properties
 There are only a few useful options on the list. Run console.log (As in Example above) to see them all
 
-| Option  | Type | Description |
-| ----- | ----- | ----- |
-| .attachEvents() | function | Attach all events |
-| .detachEvents() | function | Detach all events |
-| .nextBtn() | function | Move the slider to the right |
-| .prevBtn() | function | Move the slider to the left |
-| .changeSlide(direction: ['left', 'right']) | function | Move slider to the left / right |
-| .index | string | Get slider index |
-| .disableEvents | boolean | Disable/Enable slider navigation events |
-| .options | object | All slider options |
-| .wrapper | object | Slider wrapper |
-| .container | object | Slider container |
-| .slides | object | List of slides |
-| .buttons | object | List of buttons |
-| .paginationBullets | object | List of pagination bullets |
-
+**.attachEvents()** - Attach all events <br>
+**.detachEvents()** - Detach all events <br>
+**.nextSlide()** - Go to the next slide <br>
+**.prevSlide()** - Go to the previous slide <br>
+**.changeSlide(direction = ['left', 'right'])** - Move slider to the left / right <br>
+**.index** - Get current slide index <br>
+**.wrapper** - Slider wrapper <br>
+**.container** - Slider container <br>
+**.buttons** - Slider buttons <br>
+**.slides** - List of slides <br>
+**.paginationBullets** - List of pagination bullets
 
 ###### Comments
 
