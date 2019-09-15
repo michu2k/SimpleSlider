@@ -1,5 +1,5 @@
 /*!
- * SimpleSlider v1.8.0
+ * SimpleSlider v1.9.0
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  *

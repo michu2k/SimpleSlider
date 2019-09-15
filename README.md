@@ -3,73 +3,83 @@ Simple responsive slider created in pure javascript.
 <br> Browsers support: All modern browsers, Internet Explorer 10+
 
 ## Version
-1.8.0
+1.9.0
 
 ## Installation
 
 ###### npm
+Install the package & import files
+
 ```
 npm install simpleslider-js
 ```
 
-###### CDN
+```javascript
+import SimpleSlider from 'simpleslider-js';
+import 'simpleslider-js/dist/simpleslider.min.css';
 ```
-https://unpkg.com/simpleslider-js@1.8.0/dist/simpleSlider.min.js
-https://unpkg.com/simpleslider-js@1.8.0/dist/simpleSlider.min.css
+
+###### CDN
+Include files using CDN.
+
+```
+https://unpkg.com/simpleslider-js@1.9.0/dist/simpleSlider.min.js
+https://unpkg.com/simpleslider-js@1.9.0/dist/simpleSlider.min.css
 ```
 
 ###### Github
-You can also download files from github.
+You can also download files from Github and attach them manually to your project. <br>
+Note: On production use files (JS and CSS) only from **dist/** folder.
 
+```html
+<link rel="stylesheet" href="css/simpleSlider.min.css"> 
+<script src="js/simpleSlider.min.js"></script>  
+```
 ## Usage
-On production use files (JS and CSS) only from **dist/** folder
 
 ###### Include files
-```html
-<link rel="stylesheet" href="simpleSlider.min.css"> 
-<script src="simpleSlider.min.js"></script>  
-```
+See the section above.
 
 ###### Create HTML layout
 ```html
 <div class="simple-slider simple-slider-first">
-    <div class="slider-wrapper">
-        <!-- First slide -->
-        <div class="slider-slide" style="background-image: url('path/to/image')">
-            <!-- Any HTML content -->
-        </div>
-
-        <!-- Second slide -->
-        <div class="slider-slide" style="background-image: url('path/to/image')">
-            <!-- Any HTML content -->
-        </div>
-
-        <!-- Third slide -->
-        <div class="slider-slide" style="background-image: url('path/to/image')">
-            <!-- Any HTML content -->
-        </div>
+  <div class="slider-wrapper">
+    <!-- First slide -->
+    <div class="slider-slide" style="background-image: url('path/to/image')">
+      <!-- Any HTML content -->
     </div>
 
-    <!--Pagination (Not required)-->
-    <div class="slider-pagination"></div>
+    <!-- Second slide -->
+    <div class="slider-slide" style="background-image: url('path/to/image')">
+      <!-- Any HTML content -->
+    </div>
 
-    <!-- Buttons (Not required) -->
-    <div class="slider-btn slider-btn-prev"></div>
-    <div class="slider-btn slider-btn-next"></div> 
+    <!-- Third slide -->
+    <div class="slider-slide" style="background-image: url('path/to/image')">
+      <!-- Any HTML content -->
+    </div>
+  </div>
+
+  <!--Pagination (Not required)-->
+  <div class="slider-pagination"></div>
+
+  <!-- Buttons (Not required) -->
+  <div class="slider-btn slider-btn-prev"></div>
+  <div class="slider-btn slider-btn-next"></div> 
 </div>
 ```
 
 ###### Initialize the module
 ```javascript
 <script>
-    new simpleSlider('.simple-slider-first');
+  new SimpleSlider('.simple-slider-first');
 </script>
 ```
 
 ## API
 
 ###### Example
-new simpleSlider(container, options)
+new SimpleSlider(container, options)
 
 * container - string (required), selector of slider container
 * options - object (optional), slider options
@@ -78,28 +88,32 @@ You can initialize more than one slider per page.
 
 ```javascript
 <script>
-    // Default options
-    new simpleSlider('.simple-slider-first');  
+  // Default options
+  new SimpleSlider('.simple-slider-first');  
 
-    // User options
-    new simpleSlider('.simple-slider-second', {
-        speed: 600,
-        autoplay: false,
-        class: {
-            wrapper: 'slider-wrapper'
-        },
-        onChange: function(activeSlide) {
-            console.log(activeSlide);
-        }
-    });
+  // User options
+  new SimpleSlider('.simple-slider-second', {
+    speed: 600,
+    autoplay: false,
+    class: {
+      wrapper: 'slider-wrapper'
+    },
+    onChange: function(activeSlide) {
+      console.log(activeSlide);
+    }
+  });
 
-    // SlidesPerView example
-    new simpleSlider('.simple-slider-third', {
-        slidesPerView: {
-            768: 2, // 2 slides for viewport >= 768px
-            1024: 3 // 3 slides for viewport >= 1024px
-        }
-    });
+  // SlidesPerView example
+  new SimpleSlider('.simple-slider-third', {
+    slidesPerView: {
+      768: 2, // 2 slides for viewport >= 768px
+      1024: 3 // 3 slides for viewport >= 1024px
+    }
+  });
+  
+  // Access to other slider functions and properties
+  var slider = new SimpleSlider('.simple-slider-third');
+  console.log(slider);
 </script>
 ```
 
@@ -117,7 +131,8 @@ You can initialize more than one slider per page.
 | class:buttons | string | 'slider-btn' | Buttons class |
 | class:pagination | string | 'slider-pagination' | Pagination class |
 | class:paginationItem | string | 'pagination-bullet' | Pagination bullet class |
-| onChange | function | - | Function called after slide change. Can take one param <br> (active slide) |
+| onInit | function | - | Function called after slider initialization |
+| onChange | function | - | Function called when the slide change start |
 
 ###### Comments
 
