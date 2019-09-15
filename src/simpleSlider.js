@@ -233,7 +233,7 @@
       wrapper.appendChild(clonesAtFront);
       wrapper.insertBefore(clonesAtBack, this.slides[0]);
               
-      this.allSlides = this.container.querySelectorAll(`.${slide}`);
+      this.slidesWithClones = this.container.querySelectorAll(`.${slide}`);
     };
 
     /**
@@ -247,14 +247,14 @@
       this.drag.maxOffset = 100;
       this.drag.minOffset = -100;
 
-      Object.keys(this.allSlides).map(index => {
-        const slide = this.allSlides[index];
+      Object.keys(this.slidesWithClones).map(index => {
+        const slide = this.slidesWithClones[index];
 
         slide.style.width = slideWidth;
         this.wrapperWidth += slide.offsetWidth;
 
         // Maximum drag offset
-        if (parseInt(index) + this.slidesPerView < this.allSlides.length - offset) {
+        if (parseInt(index) + this.slidesPerView < this.slidesWithClones.length - offset) {
           this.drag.maxOffset += slide.offsetWidth;
         }
 
@@ -275,7 +275,7 @@
       this.wrapperPosition = 0;
 
       for (let i = 0; i < activeSlide; i++) {
-        this.wrapperPosition += this.allSlides[i].offsetWidth;
+        this.wrapperPosition += this.slidesWithClones[i].offsetWidth;
       }
 
       // Set wrapper position

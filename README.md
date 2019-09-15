@@ -134,6 +134,26 @@ You can initialize more than one slider per page.
 | onInit | function | - | Function called after slider initialization |
 | onChange | function | - | Function called when the slide change start |
 
+###### Other functions and properties
+There are only a few useful options on the list. Run console.log (As in Example above) to see them all
+
+| Option  | Type | Description |
+| ----- | ----- | ----- |
+| .attachEvents() | function | Attach all events |
+| .detachEvents() | function | Detach all events |
+| .nextBtn() | function | Move the slider to the right |
+| .prevBtn() | function | Move the slider to the left |
+| .changeSlide(direction: ['left', 'right']) | function | Move slider to the left / right |
+| .index | string | Get slider index |
+| .disableEvents | boolean | Disable/Enable slider navigation events |
+| .options | object | All slider options |
+| .wrapper | object | Slider wrapper |
+| .container | object | Slider container |
+| .slides | object | List of slides |
+| .buttons | object | List of buttons |
+| .paginationBullets | object | List of pagination bullets |
+
+
 ###### Comments
 
 **slidesPerView** - Number of slides can't be bigger than the amount of slides in the slider.
