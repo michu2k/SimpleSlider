@@ -48,7 +48,7 @@
      */
     this.setSliderOptions = () => {
       // Get user options
-      const { speed, delay, slidesPerView, class: { wrapper, slide, buttons, pagination } } = this.options;
+      const { slidesPerView, class: { wrapper, slide, buttons, pagination } } = this.options;
 
       // DOM elements
       this.container = document.querySelector(selector);
@@ -415,17 +415,7 @@
      * @param {number} index = index value
      * @return {number} index = index value after correction
      */
-    this.updateIndex = index => {
-      if (index > this.slides.length) {
-        index = 1;
-      }
-  
-      if (index <= 0) {
-        index = this.slides.length;
-      }
-  
-      return index;
-    };
+    this.updateIndex = index => index > this.slides.length ? 1 : (index <= 0 ? this.slides.length : index);
 
     /** 
      * Slider autoplay
