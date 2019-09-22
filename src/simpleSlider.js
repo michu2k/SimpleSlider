@@ -20,13 +20,14 @@
     /**
      * Extend defaults options
      */
-    this.setUserOptions = () => {
+    const setUserOptions = () => {
       // Defaults
       const defaults = {
         speed: 600, // transition duration in ms {number}
         delay: 5000, // delay between transitions in ms {number}
         enableDrag: true, // enable drag option {boolean}
         autoplay: false, // slider autoplay {boolean}
+        loop: true, // slider loop {boolean}
         slidesPerView: {}, // number of slides per view {object}
         class: {
           wrapper: 'slider-wrapper', // wrapper class {string}
@@ -46,9 +47,9 @@
     /**
      * Set slider options
      */
-    this.setSliderOptions = () => {
+    const setSliderOptions = () => {
       // Get user options
-      const { slidesPerView, class: { wrapper, slide, buttons, pagination } } = this.options;
+      const { loop, slidesPerView, class: { wrapper, slide, buttons, pagination } } = this.options;
 
       // DOM elements
       this.container = document.querySelector(selector);
@@ -59,7 +60,8 @@
 
       // Options
       this.disableEvents = false;
-      this.index = 1;
+      this.slidesWithClones = this.slides;
+      this.index = loop ? 1 : 0;
       this.slidesPerView = 1;
       this.maxSlidesPerView = Math.max(...Object.keys(slidesPerView).map(key => slidesPerView[key]), this.slidesPerView);
       this.wrapperWidth = 0;
@@ -84,8 +86,8 @@
      */
     this.init = () => {
       // Set options
-      this.setUserOptions();
-      this.setSliderOptions();
+      setUserOptions();
+      setSliderOptions();
 
       const { onInit } = this.options;
 
@@ -145,15 +147,15 @@
         c.addEventListener('mouseup', this.mouseupHandler);
         c.addEventListener('mouseleave', this.mouseleaveHandler);
       }
+
+      // Pagination
+      c.addEventListener('click', this.paginationBulletsHandler);
   
       // Buttons
       if (this.buttons.length === 2) {
         this.buttons[0].addEventListener('click', this.prevSlide);
         this.buttons[1].addEventListener('click', this.nextSlide);
       }
-
-      // Pagination
-      c.addEventListener('click', this.paginationBulletsHandler);
 
       // Window
       window.addEventListener('resize', this.resizeHandler);
@@ -178,12 +180,12 @@
       c.removeEventListener('mouseup', this.mouseupHandler);
       c.removeEventListener('mouseleave', this.mouseleaveHandler);
 
+      // Pagination
+      c.removeEventListener('click', this.paginationBulletsHandler);
+
       // Buttons
       this.buttons[0].removeEventListener('click', this.prevSlide);
       this.buttons[1].removeEventListener('click', this.nextSlide);
-
-      // Pagination
-      c.removeEventListener('click', this.paginationBulletsHandler);
 
       // Window
       window.removeEventListener('resize', this.resizeHandler);
@@ -209,6 +211,8 @@
      * Clone slides and append them to the DOM
      */
     this.createClones = () => {
+      if (!this.options.loop) return;
+
       const { class: { slide } } = this.options;
       const wrapper = this.wrapper;
       const slidesLength = this.slides.length - 1;
@@ -241,19 +245,20 @@
     this.setWidth = () => {
       const slideWidth = Math.round(this.container.offsetWidth / this.slidesPerView) + 'px';
       const offset = this.maxSlidesPerView - this.slidesPerView;
+      const slides = this.slidesWithClones;
 
       this.wrapperWidth = 0;
       this.drag.maxOffset = 100;
       this.drag.minOffset = -100;
 
-      Object.keys(this.slidesWithClones).map(index => {
-        const slide = this.slidesWithClones[index];
+      Object.keys(slides).map(index => {
+        const slide = slides[index];
 
         slide.style.width = slideWidth;
         this.wrapperWidth += slide.offsetWidth;
 
         // Maximum drag offset
-        if (parseInt(index) + this.slidesPerView < this.slidesWithClones.length - offset) {
+        if (parseInt(index) + this.slidesPerView < slides.length - offset) {
           this.drag.maxOffset += slide.offsetWidth;
         }
 
@@ -286,8 +291,8 @@
      * @param {string} direction = move direction [left, right]
      * @param {boolean} isAutoplay = check if the function is called by autoplay
      */
-    this.changeSlide = (direction, isAutoplay = false) => {
-      const { speed, onChange } = this.options;
+    this.changeSlide = (isAutoplay = false) => {
+      const { speed, loop, onChange } = this.options;
 
       if (!this.disableEvents) {
 
@@ -297,8 +302,9 @@
           this.autoplay();   
         }
 
-        // Change index value depending on the direction
-        direction == 'right' ? this.index++ : this.index--;
+        if (!loop) {
+          this.index = this.updateIndex(this.index);
+        }
 
         // Disable events during slider animation
         this.disableEvents = true;
@@ -307,12 +313,11 @@
         this.setTransition(speed);
         this.moveWrapper();
 
-        // Call onChange function
         onChange();
 
         setTimeout(() => {
           // Switch from the cloned slide to the proper slide
-          if (this.index <= 0 || this.index > this.slides.length) {
+          if (loop && (this.index <= 0 || this.index > this.slides.length)) {
             this.index = this.updateIndex(this.index);
             this.setTransition(0);
             this.moveWrapper();
@@ -365,16 +370,15 @@
      * Move slide when clicked on pagination bullet
      */
     this.paginationBulletsHandler = e => {
-      const { class: { paginationItem } } = this.options;
+      const { loop, class: { paginationItem } } = this.options;
 
       if (e.target.classList.contains(paginationItem)) {
         const index = [...this.paginationBullets].indexOf(e.target);
 
         if (!this.disableEvents) {
-          this.index = index;
+          this.index = loop ? index : index - 1;
+          this.nextSlide();
         }
-
-        this.nextSlide();
       }
     };
 
@@ -384,30 +388,51 @@
     this.highlightPaginationBullet = () => {
       if (!this.pagination) return;
 
-      const { class: { paginationItem } } = this.options;
+      const { loop, class: { paginationItem } } = this.options;
 
       // Remove active class from bullet
-      let activeBullet = this.pagination.querySelector('.is-active');
+      const activeBullet = this.pagination.querySelector('.is-active');
       activeBullet.classList.remove('is-active');
-  
+
       // Add class to active bullet
-      let bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
-      let index = this.updateIndex(this.index);
-      bullets[index - 1].classList.add('is-active');
+      const bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
+      const index = loop ? this.updateIndex(this.index) - 1 : this.updateIndex(this.index);
+
+      bullets[index].classList.add('is-active');
     };
 
     /**
      * Previous Slide
      */
     this.prevSlide = () => {
-      this.changeSlide('left');
+      this.decreaseIndex();
+      this.changeSlide();
     };
 
     /**
      * Next Slide
      */
     this.nextSlide = () => {
-      this.changeSlide('right');
+      this.increaseIndex();
+      this.changeSlide();
+    };
+
+    /**
+     * Increase index
+     */
+    this.increaseIndex = () => {
+      if (!this.disableEvents) {
+        this.index++;
+      }
+    };
+
+    /**
+     * Decrease index
+     */
+    this.decreaseIndex = () => {
+      if (!this.disableEvents) {
+        this.index--;
+      }
     };
 
     /**
@@ -415,7 +440,15 @@
      * @param {number} index = index value
      * @return {number} index = index value after correction
      */
-    this.updateIndex = index => index > this.slides.length ? 1 : (index <= 0 ? this.slides.length : index);
+    this.updateIndex = index => {
+      const { loop } = this.options;
+
+      if (loop) {
+        return index > this.slides.length ? 1 : (index <= 0 ? this.slides.length : index);
+      }
+        
+      return index > this.slides.length - 1 ? this.slides.length - 1 : (index <= 0 ? 0 : index);
+    };
 
     /** 
      * Slider autoplay
@@ -425,7 +458,8 @@
 
       if (autoplay) {
         this.timer = setTimeout(() => {
-          this.changeSlide('right', true);
+          this.increaseIndex();
+          this.changeSlide(true);
           this.autoplay();
         }, delay + speed);
       }
