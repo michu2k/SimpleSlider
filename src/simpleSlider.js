@@ -275,10 +275,13 @@
      * Change wrapper position by a certain number of pixels
      */
     this.moveWrapper = () => {
-      const activeSlide = (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index;
+      const { loop } = this.options;
+      const maxIndex = this.slidesWithClones.length - this.slidesPerView;
+      const activeSlide = loop ? 
+        (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index : this.index;
       this.wrapperPosition = 0;
 
-      for (let i = 0; i < activeSlide; i++) {
+      for (let i = 0; i < Math.min(activeSlide, maxIndex); i++) {
         this.wrapperPosition += this.slidesWithClones[i].offsetWidth;
       }
 
@@ -442,12 +445,13 @@
      */
     this.updateIndex = index => {
       const { loop } = this.options;
+      const maxIndex = this.slidesWithClones.length - this.slidesPerView;
 
       if (loop) {
         return index > this.slides.length ? 1 : (index <= 0 ? this.slides.length : index);
       }
         
-      return index > this.slides.length - 1 ? this.slides.length - 1 : (index <= 0 ? 0 : index);
+      return index > maxIndex ? maxIndex : (index <= 0 ? 0 : index);
     };
 
     /** 
