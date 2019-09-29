@@ -86,12 +86,10 @@
       setUserOptions();
       setSliderOptions();
 
-      const { loop, onInit } = this.options;
-
-      this.calculateSlidesPerView();
-      this.maxIndex = loop ? this.slides.length : this.slides.length - this.slidesPerView + 1;
+      const { onInit } = this.options;
 
       // Create slides and set wrapper
+      this.calculateSlidesPerView();
       this.createClones();
       this.setWidth();
       this.moveWrapper();
@@ -195,7 +193,7 @@
      * Set the number of slides to be shown
      */
     this.calculateSlidesPerView = () => {
-      const { slidesPerView } = this.options;
+      const { loop, slidesPerView } = this.options;
       this.slidesPerView = 1;
 
       Object.keys(slidesPerView).forEach(viewport => {
@@ -203,6 +201,8 @@
           this.slidesPerView = slidesPerView[viewport];
         }
       });
+
+      this.maxIndex = loop ? this.slides.length : this.slides.length - this.slidesPerView + 1;
     };
 
     /**
