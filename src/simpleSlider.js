@@ -86,10 +86,12 @@
       setUserOptions();
       setSliderOptions();
 
-      const { onInit } = this.options;
+      const { loop, onInit } = this.options;
+
+      this.calculateSlidesPerView();
+      this.maxIndex = loop ? this.slides.length : this.slides.length - this.slidesPerView + 1;
 
       // Create slides and set wrapper
-      this.calculateSlidesPerView();
       this.createClones();
       this.setWidth();
       this.moveWrapper();
@@ -261,8 +263,6 @@
         (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index : this.index;
       this.wrapperPosition = 0;
 
-      console.log(activeSlide);
-
       for (let i = 0; i < activeSlide; i++) {
         this.wrapperPosition += this.slidesWithClones[i].offsetWidth;
       }
@@ -319,13 +319,12 @@
     this.createPagination = () => {
       if (!this.pagination) return;
 
-      const { loop, class: { paginationItem } } = this.options;
+      const { class: { paginationItem } } = this.options;
       const fragment = document.createDocumentFragment();
-      const maxIndex = loop ? this.slides.length - 1 : this.slides.length - this.slidesPerView;
       let bullet;
-  
+
       // Create bullets
-      for (let i = 0; i <= maxIndex; i++) {
+      for (let i = 0; i < this.maxIndex; i++) {
         bullet = document.createElement('span');
         bullet.classList.add(paginationItem); 
   
@@ -418,13 +417,12 @@
      */
     this.updateIndex = index => {
       const { loop } = this.options;
-      const maxIndex = this.slidesWithClones.length - this.slidesPerView;
 
       if (loop) {
         return index > this.slides.length ? 1 : (index <= 0 ? this.slides.length : index);
       }
-        
-      return index > maxIndex ? maxIndex : (index <= 0 ? 0 : index);
+
+      return index >= this.maxIndex ? this.maxIndex - 1 : (index <= 0 ? 0 : index);
     };
 
     /** 
@@ -486,10 +484,22 @@
     this.updateSliderDuringDrag = () => {
       this.resetAutoplay();
 
-      this.drag.dragDiff = this.drag.endX - this.drag.startX;
-      const activeslideWidth = this.slides[this.index - 1].offsetWidth;
+      const { loop } = this.options;
+      const slideIndex = loop ? this.index - 1 : this.index;
+      const activeslideWidth = this.slides[slideIndex].offsetWidth;
       const movement = this.wrapperPosition - this.drag.dragDiff;
-      const maxMoveOffset = 100 + activeslideWidth;
+      let maxMoveOffset = 100 + activeslideWidth;
+      this.drag.dragDiff = this.drag.endX - this.drag.startX;
+
+      if (!loop) {
+        if (this.index <= 0 && this.drag.dragDiff > 0) {
+          maxMoveOffset = 100;
+        }
+
+        if (this.index >= this.maxIndex - 1 && this.drag.dragDiff < 0) {
+          maxMoveOffset = 100;
+        }
+      }
 
       if (this.drag.dragDiff < maxMoveOffset && this.drag.dragDiff > (-1 * maxMoveOffset)) {
         this.wrapper.style[this.transform] = `translate3d(${-1 * movement}px, 0, 0)`;
