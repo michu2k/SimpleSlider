@@ -27,7 +27,7 @@
         delay: 5000, // delay between transitions in ms {number}
         enableDrag: true, // enable drag option {boolean}
         autoplay: false, // slider autoplay {boolean}
-        loop: true, // slider loop {boolean}
+        loop: false, // slider loop {boolean}
         slidesPerView: {}, // number of slides per view {object}
         class: {
           wrapper: 'slider-wrapper', // wrapper class {string}
@@ -259,9 +259,12 @@
      */
     this.moveWrapper = () => {
       const { loop } = this.options;
-      const activeSlide = loop ? 
-        (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index : this.index;
+      let activeSlide = (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index;
       this.wrapperPosition = 0;
+
+      if (!loop) {
+        activeSlide = this.index >= (this.maxIndex - Math.floor(this.slidesPerView / 2)) ? this.maxIndex - 1 : this.index;
+      }
 
       for (let i = 0; i < activeSlide; i++) {
         this.wrapperPosition += this.slidesWithClones[i].offsetWidth;
@@ -314,7 +317,7 @@
     };
 
     /**
-     * Create slider pagination
+     * Create pagination
      */ 
     this.createPagination = () => {
       if (!this.pagination) return;
@@ -339,6 +342,14 @@
       // Append bullets to the DOM
       this.pagination.appendChild(fragment);
       this.paginationBullets = this.pagination.querySelectorAll(`.${paginationItem}`);
+    };
+
+    /**
+     * Destroy pagination
+     */ 
+    this.destroyPagination = () => {
+      if (!this.pagination) return;
+      this.pagination.innerHTML = '';
     };
 
     /**
@@ -610,10 +621,18 @@
      * Calculate the slider when changing the window size
      */
     this.resizeHandler = () => {
+      const { loop } = this.options;
+      const prevSlidesPerView = this.slidesPerView;
+
+      this.wrapper.style[this.transitionDuration] = 0 + 'ms';
       this.calculateSlidesPerView();
       this.setWidth();
-      this.wrapper.style[this.transitionDuration] = 0 + 'ms';
       this.moveWrapper();
+
+      if (!loop && prevSlidesPerView !== this.slidesPerView) {
+        this.destroyPagination();
+        this.createPagination();
+      }
     };
 
     /**
