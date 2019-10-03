@@ -455,9 +455,7 @@
     /**
      * Reset slider autoplay
      */
-    this.resetAutoplay = () => {
-      clearTimeout(this.timer);
-    };
+    this.resetAutoplay = () => clearTimeout(this.timer);
 
     /**
      * Update slider position after drag event
