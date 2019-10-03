@@ -322,8 +322,9 @@
     this.createPagination = () => {
       if (!this.pagination) return;
 
-      const { class: { paginationItem } } = this.options;
+      const { loop, class: { paginationItem } } = this.options;
       const fragment = document.createDocumentFragment();
+      const activeSlide = loop ? 0 : Math.min(this.index, this.maxIndex - 1);
       let bullet;
 
       // Create bullets
@@ -331,8 +332,8 @@
         bullet = document.createElement('span');
         bullet.classList.add(paginationItem); 
   
-        // Add active class to the first bullet
-        if (i == 0) {
+        // Add active class to the bullet
+        if (i == activeSlide) {
           bullet.classList.add('is-active');
         }
   
