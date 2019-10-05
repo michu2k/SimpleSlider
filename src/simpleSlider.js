@@ -27,7 +27,7 @@
         delay: 5000, // delay between transitions in ms {number}
         enableDrag: true, // enable drag option {boolean}
         autoplay: false, // slider autoplay {boolean}
-        loop: false, // slider loop {boolean}
+        loop: true, // slider loop {boolean}
         slidesPerView: {}, // number of slides per view {object}
         class: {
           wrapper: 'slider-wrapper', // wrapper class {string}
@@ -290,11 +290,16 @@
         }
 
         if (!loop) {
-          this.index = this.updateIndex(this.index);
-        }
+          // Disable events
+          if (this.index >= 0 && this.index < this.maxIndex) {
+            this.disableEvents = true;
+          }
 
-        // Disable events during slider animation
-        this.disableEvents = true;
+          this.index = this.updateIndex(this.index);
+        } else {
+          // Disable events
+          this.disableEvents = true;
+        }
 
         this.highlightPaginationBullet();
         this.wrapper.style[this.transitionDuration] = speed + 'ms';
