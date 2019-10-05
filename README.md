@@ -125,6 +125,7 @@ You can initialize more than one slider per page.
 | delay | number | 5000 | Delay between transitions in ms (autoplay) |
 | enableDrag | boolean | true | Enable drag option | 
 | autoplay | boolean | false | Slider autoplay |
+| loop | boolean | true | Slider loop |
 | slidesPerView | object | 1 | The number of slides to be shown [Read more below] |
 | class:wrapper | string | 'slider-wrapper' | Wrapper class |
 | class:slide | string | 'slider-slide' | Slide class |
@@ -135,20 +136,19 @@ You can initialize more than one slider per page.
 | onChange | function | - | Function called when the slide change start |
 
 ###### Other functions and properties
-There are only a few useful options on the list. Run console.log (As in Example above) to see them all
 
-**.attachEvents()** - Attach all events <br>
-**.detachEvents()** - Detach all events <br>
-**.nextSlide()** - Go to the next slide <br>
-**.prevSlide()** - Go to the previous slide <br>
-**.changeSlide(direction = ['left', 'right'])** - Move slider to the left / right <br>
-**.index** - Get current slide index <br>
-**.wrapper** - Slider wrapper <br>
-**.container** - Slider container <br>
-**.buttons** - Slider buttons <br>
-**.slides** - List of slides <br>
-**.paginationBullets** - List of pagination bullets
+`.attachEvents()` - Attach all events <br>
+`.detachEvents()` - Detach all events <br>
+`.nextSlide()` - Go to the next slide <br>
+`.prevSlide()` - Go to the previous slide <br>
+`.index` - Get current slide index <br>
+`.wrapper` - Slider wrapper <br>
+`.container` - Slider container <br>
+`.buttons` - Slider buttons <br>
+`.slides` - List of slides <br>
+`.slidesWithClones` - List of slides with clones<br>
+`.paginationBullets` - List of pagination bullets
 
 ###### Comments
 
-**slidesPerView** - Number of slides can't be bigger than the amount of slides in the slider.
+`slidesPerView` - Number of slides can't be bigger than the amount of slides in the slider.
