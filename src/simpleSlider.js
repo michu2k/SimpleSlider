@@ -62,7 +62,7 @@
       this.disableEvents = false;
       this.slidesWithClones = this.slides;
       this.maxSlidesPerView = Math.max(...Object.keys(slidesPerView).map(key => slidesPerView[key]), 1);
-      this.index = loop ? 1 : 0;
+      this.index = 0;
       this.wrapperWidth = 0;
       this.transitionDuration = isWebkit('transitionDuration');
       this.transform = isWebkit('transform');
@@ -259,7 +259,7 @@
      */
     this.moveWrapper = () => {
       const { loop } = this.options;
-      let activeSlide = (this.maxSlidesPerView - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index;
+      let activeSlide = ((this.maxSlidesPerView + 1) - this.slidesPerView) + Math.floor(this.slidesPerView / 2) + this.index;
       this.wrapperPosition = 0;
 
       if (!loop) {
@@ -309,7 +309,7 @@
 
         setTimeout(() => {
           // Switch from the cloned slide to the proper slide
-          if (loop && (this.index <= 0 || this.index > this.slides.length)) {
+          if (loop && (this.index < 0 || this.index >= this.slides.length)) {
             this.index = this.updateIndex(this.index);
             this.wrapper.style[this.transitionDuration] = 0 + 'ms';
             this.moveWrapper();
@@ -362,13 +362,13 @@
      * Move slide when clicked on pagination bullet
      */
     this.paginationBulletsHandler = e => {
-      const { loop, class: { paginationItem } } = this.options;
+      const { class: { paginationItem } } = this.options;
 
       if (e.target.classList.contains(paginationItem)) {
         const index = [...this.paginationBullets].indexOf(e.target);
 
         if (!this.disableEvents) {
-          this.index = loop ? index : index - 1;
+          this.index = index - 1;
           this.nextSlide();
         }
       }
@@ -380,7 +380,7 @@
     this.highlightPaginationBullet = () => {
       if (!this.pagination) return;
 
-      const { loop, class: { paginationItem } } = this.options;
+      const { class: { paginationItem } } = this.options;
 
       // Remove active class from bullet
       const activeBullet = this.pagination.querySelector('.is-active');
@@ -388,7 +388,7 @@
 
       // Add class to active bullet
       const bullets = this.pagination.querySelectorAll(`.${paginationItem}`);
-      const index = loop ? this.updateIndex(this.index) - 1 : this.updateIndex(this.index);
+      const index = this.updateIndex(this.index);
 
       bullets[index].classList.add('is-active');
     };
@@ -436,7 +436,7 @@
       const { loop } = this.options;
 
       if (loop) {
-        return index > this.slides.length ? 1 : (index <= 0 ? this.slides.length : index);
+        return index >= this.slides.length ? 0 : (index < 0 ? this.slides.length - 1 : index);
       }
 
       return index >= this.maxIndex ? this.maxIndex - 1 : (index <= 0 ? 0 : index);
@@ -500,8 +500,7 @@
       this.resetAutoplay();
 
       const { loop } = this.options;
-      const slideIndex = loop ? this.index - 1 : this.index;
-      const activeslideWidth = this.slides[slideIndex].offsetWidth;
+      const activeslideWidth = this.slides[this.index].offsetWidth;
       const movement = this.wrapperPosition - this.drag.dragDiff;
       let maxMoveOffset = 100 + activeslideWidth;
       this.drag.dragDiff = this.drag.endX - this.drag.startX;
