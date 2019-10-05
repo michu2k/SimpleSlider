@@ -52,9 +52,11 @@
   <h2 class="page-heading">Code</h2>
 
   <code class="page-code">
-    new SimpleSlider('.selector', {
-      <span class="code-line">onChange: function(active) {</span>
-      <span class="code-line-deep">console.log(active);</span>
+    const slider = new SimpleSlider('.selector', {
+      <span class="code-line">onChange: function() {</span>
+      <span class="code-line-deep">const activeIndex = slider.updateIndex(slider.index);</span>
+      <span class="code-line-deep">const activeSlide = slider.slides[activeIndex];</span>
+      <span class="code-line-deep">console.log('Active Slide: ', activeSlide);</span>
       <span class="code-line">}</span>
     });
   </code>
@@ -62,9 +64,11 @@
 
 <script src="../dist/simpleSlider.min.js"></script>
 <script>
-  new SimpleSlider('.page-slider', {
-    onChange: function(active) {
-      console.log(active);
+  const slider = new SimpleSlider('.page-slider', {
+    onChange: function() {
+      const activeIndex = slider.updateIndex(slider.index);
+      const activeSlide = slider.slides[activeIndex];
+      console.log('Active Slide: ', activeSlide);
     }
   });
 </script>
