@@ -98,8 +98,8 @@ You can initialize more than one slider per page.
     class: {
       wrapper: 'slider-wrapper'
     },
-    onChange: function(activeSlide) {
-      console.log(activeSlide);
+    onChange: function() {
+      console.log('Slide changed !');
     }
   });
 
