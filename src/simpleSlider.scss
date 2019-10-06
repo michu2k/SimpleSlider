@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * SimpleSlider v1.8.0
+ * SimpleSlider v1.9.0
  * Simple responsive slider created in pure javascript.
  * https://github.com/michu2k/SimpleSlider
  * 
@@ -10,71 +10,71 @@
 
 // Slider container
 .simple-slider {
-    overflow: hidden;
+  overflow: hidden;
+  position: relative;
+
+  // Wrapper
+  .slider-wrapper {
+    height: 100%;
     position: relative;
+    transform: translate3d(0, 0, 0);
+    transition-timing-function: cubic-bezier(.7, 0, .3, 1);
+  }
 
-    // Wrapper
-    .slider-wrapper {
-        height: 100%;
-        position: relative;
-        transform: translate3d(0, 0, 0);
-        transition-timing-function: cubic-bezier(.7, 0, .3, 1);
+  // Slide
+  .slider-slide {
+    background-size: cover;
+    background-position: center top;
+    height: 100%;
+    float: left;
+  }
+
+  // Navigation
+  .slider-pagination {
+    text-align: center;
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+
+    // Bullet
+    .pagination-bullet {
+      display: inline-block;
+      cursor: pointer;
+      width: 16px;
+      height: 5px;
+      margin: 4px;
+      background-color: #fff;
+      transition: all 0.3s ease;
+
+      // Active class
+      &.is-active {
+        background-color: #999;
+      }
+    }
+  }
+
+  // Buttons
+  .slider-btn {
+    width: 30px;
+    height: 50px;
+    top: 50%;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    position: absolute;
+    transform: translate(0, -50%);
+
+    // Previous button
+    &.slider-btn-prev {
+      left: 20px;
+      background-image: url('../img/prev.svg');
+      background-position: left;
     }
 
-    // Slide
-    .slider-slide {
-        background-size: cover;
-        background-position: center top;
-        height: 100%;
-        float: left;
+    // Next button
+    &.slider-btn-next {
+      right: 20px;
+      background-image: url('../img/next.svg');
+      background-position: right;
     }
-
-    // Navigation
-    .slider-pagination {
-        text-align: center;
-        width: 100%;
-        bottom: 0;
-        position: absolute;
-
-        // Bullet
-        .pagination-bullet {
-            display: inline-block;
-            cursor: pointer;
-            width: 16px;
-            height: 5px;
-            margin: 4px;
-            background-color: #fff;
-            transition: all 0.3s ease;
-
-            // Active class
-            &.is-active {
-                background-color: #999;
-            }
-        }
-    }
-
-    // Buttons
-    .slider-btn {
-        width: 30px;
-        height: 50px;
-        top: 50%;
-        cursor: pointer;
-        background-repeat: no-repeat;
-        position: absolute;
-        transform: translate(0, -50%);
-
-        // Previous button
-        &.slider-btn-prev {
-            left: 20px;
-            background-image: url(../img/prev.svg);
-            background-position: left;
-        }
-
-        // Next button
-        &.slider-btn-next {
-            right: 20px;
-            background-image: url(../img/next.svg);
-            background-position: right;
-        }
-    }
+  }
 }

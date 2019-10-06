@@ -12,8 +12,8 @@
 <body>
 
 <div class="page">
-  <h1 class="page-heading">SlidesPerView</h1>
-  <span class="page-desc">Slider with slidesPerView option. Change the window size to see the responsive effect</span>
+  <h1 class="page-heading">Loop</h1>
+  <span class="page-desc">Slider with loop option. The slider doesn't change the slides from last to first and vice versa.</span>
   <a href="https://michu2k.github.io/SimpleSlider/demo/" class="page-link">Go Back</a>
 
   <!-- Slider -->
@@ -53,10 +53,7 @@
 
   <code class="page-code">
     new SimpleSlider('.selector', {
-      <span class="code-line">slidesPerView: {</span>   
-      <span class="code-line-deep">768: 2,</span>
-      <span class="code-line-deep">1024: 3,</span>
-      <span class="code-line">}</span>     
+      <span class="code-line">loop: false</span> 
     });
   </code>
 </div>
@@ -64,10 +61,7 @@
 <script src="../dist/simpleSlider.min.js"></script>
 <script>
   new SimpleSlider('.page-slider', {
-    slidesPerView: {
-      768: 2,
-      1024: 3
-    }
+    loop: false
   });
 </script>
 
