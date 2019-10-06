@@ -49,7 +49,7 @@
      */
     const setSliderOptions = () => {
       // Get user options
-      const { loop, slidesPerView, class: { wrapper, slide, buttons, pagination } } = this.options;
+      const { slidesPerView, class: { wrapper, slide, buttons, pagination } } = this.options;
 
       // DOM elements
       this.container = document.querySelector(selector);
@@ -363,9 +363,14 @@
      */
     this.paginationBulletsHandler = e => {
       const { class: { paginationItem } } = this.options;
+      const bullets = [];
 
       if (e.target.classList.contains(paginationItem)) {
-        const index = [...this.paginationBullets].indexOf(e.target);
+        for (let i = 0; i < this.paginationBullets.length; i++) {
+          bullets.push(this.paginationBullets[i]);
+        }
+
+        const index = bullets.indexOf(e.target);
 
         if (!this.disableEvents) {
           this.index = index - 1;
