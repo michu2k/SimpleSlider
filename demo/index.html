@@ -52,8 +52,14 @@
 </div>
 
 <footer class="footer">
-  <span class="footer-copyright">&copy; 2017 - 2019</span>
+  <span class="footer-copyright">&copy; 2017 - <span id="curr-date"></span></span>
 </footer>
+
+<script>
+  var c = document.querySelector('#curr-date');
+  var year = new Date().getFullYear();
+  c.innerHTML = year;
+</script>
 
 </body>
 </html>
